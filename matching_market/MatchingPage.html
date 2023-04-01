@@ -1,3 +1,7 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+{% load staticfiles otree %}
+
 {{ block title }}
 Matching Market
 {{ endblock }}
@@ -15,20 +19,19 @@ This is round {{player.round_number}}
 <br>
 Number of participants: {{group_size}}
 
-<table id="mytable">
+<table id="pref-table">
     <tr>
         <th>Space</th>
         <th>Term</th>
     </tr>
-    {{ for s, t in contracts }}
+    {{ for s, t in preference }}
     <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
         <td>{{s}}</td>
         <td>{{t}}</td>
     </tr>
     {{ endfor }}
+    <button id="send-pref" onclick="send_preferences()">Send</button>
 </table>
-
-{{ next_button }}
 
 <script>
     var row;
@@ -44,6 +47,23 @@ Number of participants: {{group_size}}
             e.target.parentNode.after(row);
         else
             e.target.parentNode.before(row);
+    }
+
+    function send_preferences() {
+        const table = document.getElementById("pref-table");
+        const rows = table.querySelectorAll("tr");
+
+        const preference = [];
+        rows.forEach((row) => {
+            const cells = row.querySelectorAll("td");
+            if (cells.length == 2) {
+                const p = [parseInt(cells[0].textContent), parseInt(cells[1].textContent)];
+                preference.push(p);
+            }
+        });
+        liveSend({
+            'preference': preference
+        });
     }
 </script>
 

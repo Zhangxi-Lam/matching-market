@@ -1,14 +1,19 @@
 from otree.api import *
+from .preference_controller import PreferenceController
+from .matching_system import MatchingSystem
+import numpy as np
 
 doc = """
 Your app description
 """
 
+controller = PreferenceController()
+
 
 class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
     PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 1
+    NUM_ROUNDS = 100
 
 
 class Subsession(BaseSubsession):
@@ -25,35 +30,42 @@ class Player(BasePlayer):
 
 # PAGES
 class WelcomePage(Page):
-    pass
+    def is_displayed(player):
+        return player.group.round_number == 1
+
+    def vars_for_template(player: Player):
+        group_size = len(player.group.get_players())
+        controller.set_group_size(group_size)
 
 
 class InstructionPage(Page):
-    pass
+    def is_displayed(player):
+        return player.group.round_number == 1
 
 
 class MatchingPage(Page):
-    # def get_timeout_seconds(self):
-    # return 1800
+    def is_displayed(player):
+        pass
 
-    @staticmethod
-    def vars_for_template(self):
-        print(len(self.group.get_players()))
-        group_size = len(self.group.get_players())
+    def vars_for_template(player: Player):
+        group_size = len(player.group.get_players())
+        controller.generate_preferences(
+            player.group.round_number, player.id_in_group)
         return {"group_size": group_size,
-                "contracts": MatchingPage.generate_contracts(group_size)}
+                "preference": controller.get_player_preference(player.id_in_group)}
 
-    @staticmethod
-    def generate_contracts(group_size):
-        contracts = []
-        for i in range(1, group_size + 1):
-            contracts.append((i, '+'))
-            contracts.append((i, '-'))
-        return contracts
+    def live_method(player: Player, data):
+        controller.set_player_preference(
+            player.id_in_group, data['preference'])
 
 
 class RoundResults(Page):
-    pass
+    def vars_for_template(player: Player):
+        matching_system = MatchingSystem()
+        print(matching_system.algo_da(controller.to_numpy_array(controller.player_preferences),
+                                      controller.to_numpy_array(
+                                          controller.space_preferences), controller.get_group_size()
+                                      ))
 
 
 page_sequence = [WelcomePage, InstructionPage, MatchingPage, RoundResults]
