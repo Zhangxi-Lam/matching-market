@@ -7,11 +7,12 @@ class MatchingSystem:
     def __init__(self, controller: PreferenceController):
         self.controller = controller
 
-    def get_matching_result(self, matching):
+    def get_matching_result(self, matching, r):
         if matching == 'DA':
-            return self.algo_da(self.controller.to_numpy_array(self.controller.player_preferences),
-                                self.controller.to_numpy_array(
+            result = self.algo_da(self.controller.to_numpy_array(self.controller.player_preferences),
+                                  self.controller.to_numpy_array(
                 self.controller.space_preferences), self.controller.get_group_size())
+        print(result)
 
     def algo_da(self, pref_player, pref_space, n):
         # get the initial empty accumulate set for each space
@@ -80,5 +81,4 @@ class MatchingSystem:
         my_list = []
         my_list.append(steps)
         my_list.append(space_choi)
-        print(my_list)
         return my_list

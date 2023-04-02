@@ -71,10 +71,9 @@ class RoundResults(Page):
         return config.has_round_config(player.group.round_number)
 
     def vars_for_template(player: Player):
-        matching = config.get_round_config(
-            player.group.round_number)["matching"]
+        c = config.get_round_config(player.round_number)
         matching_system = MatchingSystem(controller)
-        result = matching_system.get_matching_result(matching)
+        result = matching_system.get_matching_result(c["matching"], c["r"])
 
 
 page_sequence = [WelcomePage, InstructionPage, MatchingPage, RoundResults]
