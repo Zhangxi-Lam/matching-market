@@ -1,23 +1,30 @@
 from otree.api import *
 from .preference_controller import PreferenceController
 from .matching_system import MatchingSystem
+from .config_parser import ConfigParser
 import numpy as np
 
-doc = """
-Your app description
-"""
-
 controller = PreferenceController()
+config = ConfigParser("matching_market/config/config.csv")
 
 
 class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
-    PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 100
+    PLAYERS_PER_GROUP = 2
+    NUM_ROUNDS = 20
 
 
 class Subsession(BaseSubsession):
     pass
+
+
+def creating_session(subsession: Subsession):
+    # Read switch_group and switch_type settings from the first row. switch_type
+    # only works when switch_group=True
+    c = config.get_round_config(1)
+    fixed_id_in_group = not c["switch_type"]
+    if c["switch_group"]:
+        subsession.group_randomly(fixed_id_in_group=fixed_id_in_group)
 
 
 class Group(BaseGroup):
@@ -45,7 +52,7 @@ class InstructionPage(Page):
 
 class MatchingPage(Page):
     def is_displayed(player):
-        pass
+        return config.has_round_config(player.group.round_number)
 
     def vars_for_template(player: Player):
         group_size = len(player.group.get_players())
@@ -60,12 +67,14 @@ class MatchingPage(Page):
 
 
 class RoundResults(Page):
+    def is_displayed(player):
+        return config.has_round_config(player.group.round_number)
+
     def vars_for_template(player: Player):
-        matching_system = MatchingSystem()
-        print(matching_system.algo_da(controller.to_numpy_array(controller.player_preferences),
-                                      controller.to_numpy_array(
-                                          controller.space_preferences), controller.get_group_size()
-                                      ))
+        matching = config.get_round_config(
+            player.group.round_number)["matching"]
+        matching_system = MatchingSystem(controller)
+        result = matching_system.get_matching_result(matching)
 
 
 page_sequence = [WelcomePage, InstructionPage, MatchingPage, RoundResults]

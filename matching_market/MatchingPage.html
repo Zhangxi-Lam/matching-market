@@ -27,7 +27,11 @@ Number of participants: {{group_size}}
     {{ for s, t in preference }}
     <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
         <td>{{s}}</td>
-        <td>{{t}}</td>
+        {{ if t == 0}}
+        <td>-</td>
+        {{ else }}
+        <td>+</td>
+        {{ endif }}
     </tr>
     {{ endfor }}
     <button id="send-pref" onclick="send_preferences()">Send</button>

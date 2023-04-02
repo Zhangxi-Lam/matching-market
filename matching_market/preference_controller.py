@@ -5,7 +5,7 @@ import numpy as np
 class PreferenceController:
 
     def __init__(self):
-        self.n = 0
+        self.n = None
         self.player_preferences = None
         self.space_preferences = None
 
@@ -45,7 +45,8 @@ class PreferenceController:
     def to_numpy_array(self, preferences):
         res = []
         for i in range(self.n):
+            tmp = []
             for contract in preferences[i]:
-                tmp = [i] + contract
-                res.append([i] + contract)
-        return np.array(res)
+                tmp.append([i] + contract)
+            res.append(np.array(tmp))
+        return res

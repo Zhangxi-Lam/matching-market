@@ -1,2 +1,4 @@
 round_number,switch_group,switch_type,r,matching,penalty,practice
-1,False,False,1,"DA",False,False
+1,True,True,1,DA,False,False
+2,True,True,1,DA,False,False
+3,True,True,1,DA,False,False

@@ -5,7 +5,7 @@ SESSION_CONFIGS = [
         name='matching_market',
         display_name="Matching Market with Occupied Spaces",
         app_sequence=['matching_market'],
-        num_demo_participants=3,
+        num_demo_participants=2,
     ),
 ]
 

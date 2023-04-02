@@ -29,6 +29,9 @@ class ConfigParser:
     def __init__(self, config_file_path):
         self.configs = self._get_config_from_path(config_file_path)
 
+    def has_round_config(self, round):
+        return round - 1 < len(self.configs)
+
     def get_round_config(self, round):
         if round - 1 < len(self.configs):
             return self.configs[round - 1]

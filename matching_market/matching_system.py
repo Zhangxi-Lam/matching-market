@@ -4,14 +4,16 @@ from .preference_controller import PreferenceController
 
 
 class MatchingSystem:
-    def __init__(self):
-        pass
+    def __init__(self, controller: PreferenceController):
+        self.controller = controller
+
+    def get_matching_result(self, matching):
+        if matching == 'DA':
+            return self.algo_da(self.controller.to_numpy_array(self.controller.player_preferences),
+                                self.controller.to_numpy_array(
+                self.controller.space_preferences), self.controller.get_group_size())
 
     def algo_da(self, pref_player, pref_space, n):
-        print('pref_player')
-        print(pref_player)
-        print('pref_space')
-        print(pref_space)
         # get the initial empty accumulate set for each space
         space_acum = pref_space.copy()
         for i in range(n):
@@ -78,4 +80,5 @@ class MatchingSystem:
         my_list = []
         my_list.append(steps)
         my_list.append(space_choi)
+        print(my_list)
         return my_list
