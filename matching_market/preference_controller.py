@@ -38,7 +38,7 @@ class PreferenceController:
         random.shuffle(pref)
         for p in pref:
             if id_in_group <= r and int(p / 2) == id_in_group - 1:
-                space_preference.insert(0, [int(p / 2), p % 2])
+                space_preference.insert(0, [int(p / 2) + 1, p % 2])
             else:
                 space_preference.append([int(p / 2) + 1, p % 2])
         self.space_original_preferences[space_id - 1] = space_preference

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from .preference_controller import PreferenceController
+import random
 
 
 class MatchingSystem:
@@ -14,10 +15,15 @@ class MatchingSystem:
             self.controller.space_original_preferences)
         n = self.controller.get_group_size()
 
+        result = None
         if matching == 'DA':
             result = self.algo_da(pref_player, pref_space, n)
         elif matching == 'BE':
             result = self.algo_be(pref_player, pref_space, n, r)
+        elif matching == 'CO':
+            result = self.algo_co(pref_player, pref_space, n, r)
+        elif matching == 'SM':
+            result = self.algo_sm(pref_player, pref_space, n, r)
         return result.values.tolist()
 
     def algo_da(self, pref_player, pref_space, n):
@@ -155,4 +161,226 @@ class MatchingSystem:
             accept_contract = space_acum[i][space_acum[i][:, 3] == 1, :]
             space_choi.iloc[i, :] = accept_contract[0, :]
 
+        return space_choi
+
+    def algo_co(self, pref_player, pref_space, n, r):
+        # get the initial empty accumulate set for each space
+        space_acum = pref_space.copy()
+        player_acum = pref_player.copy()
+
+        for i in range(n):
+            # add a 4th column to store whether the contract is in the accumulate set
+            space_acum[i] = np.column_stack(
+                (space_acum[i], np.zeros(space_acum[i].shape[0])))
+            space_acum[i] = space_acum[i].astype(int)
+
+        # get the initial empty choice set for each space
+        space_choi = np.zeros((n, 4))
+        space_choi = pd.DataFrame(
+            space_choi, columns=['player', 'space', 'term', 'status'])
+        space_choi = space_choi.astype(int)
+
+        # loop for Benchmark mechanism
+        for i in range(1000):
+            # collect the players without contract
+            reject_player = []
+            for j in range(1, n + 1):
+                if j in space_choi['player'].values:
+                    continue
+                else:
+                    reject_player.append(j)
+            # break out of the loop if there is no rejected player
+            if len(reject_player) == 0:
+                break
+            # randomly select a rejected player to propose the choice
+            elif len(reject_player) == 1:
+                p = reject_player[0]
+            else:
+                p = random.choice(reject_player)
+            # get that player's most preferred contract and remove it from the preference
+            contract = player_acum[p - 1][0, :]
+            player_acum[p - 1] = np.delete(player_acum[p - 1], 0, axis=0)
+            # locate the corresponding space and add the contract to space' accumulate set
+            # =1 means the contract is in the accumulate set
+            # =2 means the contract is blocked by a claim contract
+            s = contract[1]
+            for k in range(space_acum[s - 1].shape[0]):
+                if all(space_acum[s - 1][k][0:3] == contract) and space_acum[s - 1][k][3] != 2:
+                    space_acum[s - 1][k][3] = 1
+                    break
+            # for the space selected update the corresponding choice set
+            accept_contract = space_acum[s -
+                                         1][space_acum[s - 1][:, 3] == 1, :]
+            if accept_contract.shape[0] >= 1:
+                accept_contract = accept_contract[0]
+                space_choi.iloc[s - 1, :] = accept_contract.reshape((4,))
+            # if the player is resident lock the resident's space with t- contract
+            if (p <= r) and (accept_contract[0] == p) and (accept_contract[1] != p) and (accept_contract[2] == 0):
+                # send back a claim contract to block the t+ term of the resident's space
+                for k in range(space_acum[p - 1].shape[0]):
+                    if space_acum[p - 1][k, 0] != p and space_acum[p - 1][k, 2] == 1:
+                        # mark the claim contract status = 2
+                        space_acum[p - 1][k, 3] = 2
+                # the resident's space rerun its choice function
+                rerun_contract = space_acum[p -
+                                            1][space_acum[p - 1][:, 3] == 1, :]
+                if rerun_contract.shape[0] >= 1:
+                    rerun_contract = rerun_contract[0]
+                    space_choi.iloc[p - 1, :] = rerun_contract.reshape((4,))
+                else:
+                    space_choi.iloc[p - 1, :] = np.array([0, 0, 0, 0])
+            # anyone who hold two contracts, she keeps the preferred one.
+            # loop over players in space choices to find the player with two choices
+            for k in range(1, n+1):
+                player_hold = space_choi[space_choi['player'] == k]
+                nrow = player_hold.shape[0]
+                if nrow >= 2:
+                    # extract the two contracts
+                    contract1 = player_hold.iloc[0, :]
+                    contract2 = player_hold.iloc[1, :]
+                    # loop over players preference to compare the two contracts
+                    for m in range(pref_player[k - 1].shape[0]):
+                        # if player prefers contract1, remove contract2 from space choice
+                        if np.array_equal(contract1[0:3], pref_player[k - 1][m, :]):
+                            sp = contract2[1]
+
+                            for l in range(space_choi.shape[0]):
+                                if np.array_equal(contract2[0:3], space_choi.iloc[l, 0:3]):
+                                    space_choi.iloc[l, :] = np.zeros(4)
+                                    break
+                            # remove contract2 from space accumulate set
+                            for l in range(len(space_acum[sp - 1])):
+                                if np.array_equal(contract2[0:3], space_acum[sp - 1][l, 0:3]):
+                                    space_acum[sp - 1][l, 3] = 0
+                                    break
+                            break
+                        # if player prefers contract2, remove contract1 from space choice
+                        elif np.array_equal(contract2[0:3], pref_player[k - 1][m, :]):
+                            sp = contract1[1]
+                            for l in range(space_choi.shape[0]):
+                                if np.array_equal(contract1[0:3], space_choi.iloc[l, 0:3]):
+                                    space_choi.iloc[l, :] = np.zeros(4)
+                                    break
+                            for l in range(len(space_acum[sp - 1])):
+                                if np.array_equal(contract1[0:3], space_acum[sp - 1][l, 0:3]):
+                                    space_acum[sp - 1][l, 3] = 0
+                                    break
+                            break
+        return space_choi
+
+    # similar to CO but the players are matched within their own type
+    def algo_sm(self, pref_player, pref_space, n, r):
+        # get the initial empty accumulate set for each space
+        space_acum = pref_space.copy()
+        player_acum = pref_player.copy()
+
+        # rebuild the player' preference to separate the markets
+        # for residents
+        for i in range(r):
+            player_acum[i] = player_acum[i][(player_acum[i][:, 1] <= r), :]
+        # for visitors
+        for i in range(r, n):
+            player_acum[i] = player_acum[i][player_acum[i][:, 1] > r, :]
+        for i in range(n):
+            # add a 4th column to store whether the contract is in the accumulate set
+            space_acum[i] = np.column_stack(
+                (space_acum[i], np.zeros(space_acum[i].shape[0])))
+            space_acum[i] = space_acum[i].astype(int)
+
+        # get the initial empty choice set for each space
+        space_choi = np.zeros((n, 4))
+        space_choi = pd.DataFrame(
+            space_choi, columns=['player', 'space', 'term', 'status'])
+        space_choi = space_choi.astype(int)
+
+        # loop for Benchmark mechanism
+        for i in range(1000):
+            # collect the players without contract
+            reject_player = []
+            for j in range(1, n + 1):
+                if j in space_choi['player'].values:
+                    continue
+                else:
+                    reject_player.append(j)
+            # break out of the loop if there is no rejected player
+            if len(reject_player) == 0:
+                break
+            # randomly select a rejected player to propose the choice
+            elif len(reject_player) == 1:
+                p = reject_player[0]
+            else:
+                p = random.choice(reject_player)
+
+            # get that player's most preferred contract and remove it from the preference
+            contract = player_acum[p - 1][0, :]
+            player_acum[p - 1] = np.delete(player_acum[p - 1], 0, axis=0)
+
+            # locate the corresponding space and add the contract to space' accumulate set
+            # =1 means the contract is in the accumulate set
+            # =2 means the contract is blocked by a claim contract
+            s = contract[1]
+            for k in range(space_acum[s - 1].shape[0]):
+                if all(space_acum[s - 1][k][0:3] == contract) and space_acum[s - 1][k][3] != 2:
+                    space_acum[s - 1][k][3] = 1
+                    break
+
+            # for the space selected update the corresponding choice set
+            accept_contract = space_acum[s -
+                                         1][space_acum[s - 1][:, 3] == 1, :]
+            if accept_contract.shape[0] >= 1:
+                accept_contract = accept_contract[0]
+                space_choi.iloc[s - 1, :] = accept_contract.reshape((4,))
+
+            # if the player is resident lock the resident's space with t- contract
+            if (p <= r) and (accept_contract[0] == p) and (accept_contract[1] != p) and (accept_contract[2] == 0):
+                # send back a claim contract to block the t+ term of the resident's space
+                for k in range(space_acum[p - 1].shape[0]):
+                    if space_acum[p - 1][k, 0] != p and space_acum[p - 1][k, 2] == 1:
+                        # mark the claim contract status = 2
+                        space_acum[p - 1][k, 3] = 2
+                # the resident's space rerun its choice function
+                rerun_contract = space_acum[p -
+                                            1][space_acum[p - 1][:, 3] == 1, :]
+                if rerun_contract.shape[0] >= 1:
+                    rerun_contract = rerun_contract[0]
+                    space_choi.iloc[p - 1, :] = rerun_contract.reshape((4,))
+                else:
+                    space_choi.iloc[p - 1, :] = np.array([0, 0, 0, 0])
+
+            # anyone who hold two contracts, she keeps the preferred one.
+            # loop over players in space choices to find the player with two choices
+            for k in range(1, n+1):
+                player_hold = space_choi[space_choi['player'] == k]
+                nrow = player_hold.shape[0]
+                if nrow >= 2:
+                    # extract the two contracts
+                    contract1 = player_hold.iloc[0, :]
+                    contract2 = player_hold.iloc[1, :]
+                    # loop over players preference to compare the two contracts
+                    for m in range(pref_player[k - 1].shape[0]):
+                        # if player prefers contract1, remove contract2 from space choice
+                        if np.array_equal(contract1[0:3], pref_player[k - 1][m, :]):
+                            sp = contract2[1]
+                            for l in range(space_choi.shape[0]):
+                                if np.array_equal(contract2[0:3], space_choi.iloc[l, 0:3]):
+                                    space_choi.iloc[l, :] = np.zeros(4)
+                                    break
+                            # remove contract2 from space accumulate set
+                            for l in range(len(space_acum[sp - 1])):
+                                if np.array_equal(contract2[0:3], space_acum[sp - 1][l, 0:3]):
+                                    space_acum[sp - 1][l, 3] = 0
+                                    break
+                            break
+                        # if player prefers contract2, remove contract1 from space choice
+                        elif np.array_equal(contract2[0:3], pref_player[k - 1][m, :]):
+                            sp = contract1[1]
+                            for l in range(space_choi.shape[0]):
+                                if np.array_equal(contract1[0:3], space_choi.iloc[l, 0:3]):
+                                    space_choi.iloc[l, :] = np.zeros(4)
+                                    break
+                            for l in range(len(space_acum[sp - 1])):
+                                if np.array_equal(contract1[0:3], space_acum[sp - 1][l, 0:3]):
+                                    space_acum[sp - 1][l, 3] = 0
+                                    break
+                            break
         return space_choi
