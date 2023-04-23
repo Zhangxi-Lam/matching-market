@@ -9,10 +9,10 @@ class MatchingSystem:
 
     def get_matching_result(self, matching, r):
         if matching == 'DA':
-            result = self.algo_da(self.controller.to_numpy_array(self.controller.player_preferences),
-                                  self.controller.to_numpy_array(
-                self.controller.space_preferences), self.controller.get_group_size())
-        print(result)
+            result = self.algo_da(self.controller.player_pref_to_numpy_array(self.controller.player_custom_preferences),
+                                  self.controller.space_pref_to_numpy_array(
+                self.controller.space_original_preferences), self.controller.get_group_size())
+        return result
 
     def algo_da(self, pref_player, pref_space, n):
         # get the initial empty accumulate set for each space
@@ -24,7 +24,6 @@ class MatchingSystem:
             space_acum[i] = space_acum[i].astype(int)
         # get the initial empty choice set for each space
         space_choi = np.zeros((n, 4))
-        space_choi[:, 3] = 0
         space_choi = pd.DataFrame(
             space_choi, columns=['player', 'space', 'term', 'status'])
         space_choi = space_choi.astype(int)
@@ -36,13 +35,9 @@ class MatchingSystem:
                 reject_player = list(range(1, n + 1))
             # loop over players to submit their preference
             for j in reject_player:
-                # skip if the player only has one last invalid contract
-                if len(pref_player[j - 1]) == 0:
-                    continue
                 # get player's most preferred contract and remove it from the preference
                 contract = pref_player[j - 1][0]
-                pref_player[j -
-                            1] = np.delete(pref_player[j - 1], 0, axis=0)
+                pref_player[j - 1] = np.delete(pref_player[j - 1], 0, axis=0)
                 # locate the corresponding space and add the contract to space's accumulate set
                 s = contract[1]
                 for k in range(len(space_acum[s - 1])):
@@ -56,8 +51,6 @@ class MatchingSystem:
                 # filter the accumulate set
                 temp_acum = space_acum[j][space_acum[j][:, 3] == 1, :]
                 row = temp_acum.shape[0]
-                if row == 0:
-                    continue
                 if row > 1:
                     # find the rejected contract
                     reject_contract = temp_acum[-1, :]
@@ -68,8 +61,6 @@ class MatchingSystem:
                         if np.array_equal(reject_contract, space_acum[j][k, :]):
                             space_acum[j][k, 3] = 0
                             break
-                else:
-                    continue
             # break out of the loop if there is no rejected player
             if len(reject_player) == 0:
                 break
@@ -78,7 +69,4 @@ class MatchingSystem:
             accept_contract = space_acum[i][space_acum[i][:, 3] == 1, :]
             space_choi.iloc[i, :] = accept_contract[0, :]
 
-        my_list = []
-        my_list.append(steps)
-        my_list.append(space_choi)
-        return my_list
+        return space_choi

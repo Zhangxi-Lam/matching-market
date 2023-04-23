@@ -32,10 +32,20 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    pass
+
+    def compute_payoff(self, result, original_pref, has_penalty, r):
+        res = result[result["player"] == self.id_in_group]
+        space, term = list(res["space"])[0], list(res["term"])[0]
+        payoff = None
+        for p in original_pref:
+            if p[0] == space and p[1] == term:
+                payoff = p[2]
+        if has_penalty:
+            if space != self.id_in_group and term == 0 and list(result[result["space"] == self.id_in_group]["term"])[0] == 1:
+                payoff -= 50
+        self.payoff = payoff
 
 
-# PAGES
 class WelcomePage(Page):
     def is_displayed(player):
         return player.group.round_number == 1
@@ -56,14 +66,20 @@ class MatchingPage(Page):
 
     def vars_for_template(player: Player):
         group_size = len(player.group.get_players())
-        controller.generate_preferences(
-            player.group.round_number, player.id_in_group)
+        c = config.get_round_config(player.group.round_number)
+        controller.generate_original_preference_for_id(
+            player.group.round_number, player.id_in_group, c["r"])
         return {"group_size": group_size,
-                "preference": controller.get_player_preference(player.id_in_group)}
+                "preference": controller.get_player_original_preference(player.id_in_group)}
 
     def live_method(player: Player, data):
-        controller.set_player_preference(
+        controller.set_player_custom_preference(
             player.id_in_group, data['preference'])
+
+
+class WaitResult(WaitPage):
+    body_text = "Waiting for other players to submit their preferences"
+    wait_for_all_groups = False
 
 
 class RoundResults(Page):
@@ -74,6 +90,14 @@ class RoundResults(Page):
         c = config.get_round_config(player.round_number)
         matching_system = MatchingSystem(controller)
         result = matching_system.get_matching_result(c["matching"], c["r"])
+        player.compute_payoff(
+            result, controller.get_player_original_preference(
+                player.id_in_group),
+            c["penalty"],
+            c["r"]
+        )
+        print(player.id_in_group, result, player.payoff)
 
 
-page_sequence = [WelcomePage, InstructionPage, MatchingPage, RoundResults]
+page_sequence = [WelcomePage, InstructionPage,
+                 MatchingPage, WaitResult, RoundResults]
