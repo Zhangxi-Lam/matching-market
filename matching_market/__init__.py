@@ -34,14 +34,20 @@ class Group(BaseGroup):
 class Player(BasePlayer):
 
     def compute_payoff(self, result, original_pref, has_penalty, r):
-        res = result[result["player"] == self.id_in_group]
-        space, term = list(res["space"])[0], list(res["term"])[0]
+        space, term = None, None
+        for r in result:
+            if r[0] == self.id_in_group:
+                space, term = r[1], r[2]
         payoff = None
         for p in original_pref:
             if p[0] == space and p[1] == term:
                 payoff = p[2]
         if has_penalty:
-            if space != self.id_in_group and term == 0 and list(result[result["space"] == self.id_in_group]["term"])[0] == 1:
+            resident_space_term = None
+            for r in result:
+                if r[1] == self.id_in_group:
+                    resident_space_term = r[2]
+            if space != self.id_in_group and term == 0 and resident_space_term == 1:
                 payoff -= 50
         self.payoff = payoff
 
@@ -97,6 +103,7 @@ class RoundResults(Page):
             c["r"]
         )
         print(player.id_in_group, result, player.payoff)
+        return {"result": result}
 
 
 page_sequence = [WelcomePage, InstructionPage,

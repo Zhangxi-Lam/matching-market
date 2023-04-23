@@ -18,7 +18,7 @@ class MatchingSystem:
             result = self.algo_da(pref_player, pref_space, n)
         elif matching == 'BE':
             result = self.algo_be(pref_player, pref_space, n, r)
-        return result
+        return result.values.tolist()
 
     def algo_da(self, pref_player, pref_space, n):
         # get the initial empty accumulate set for each space

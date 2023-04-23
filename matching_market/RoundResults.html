@@ -2,6 +2,39 @@
 Round Results Page
 {{ endblock }}
 {{ block content }}
+<style>
+    th,
+    td {
+        border: 1px solid black;
+        height: 10px;
+        text-align: center;
+    }
+</style>
+
+This is round {{player.round_number}}
+<br>
+Your payoff is: {{player.payoff}}
+<br>
+Final allocation is:
+<br>
+<table>
+    <tr>
+        <th>Player</th>
+        <th>Space</th>
+        <th>Term</th>
+    </tr>
+    {{ for p, s, t, _ in result }}
+    <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
+        <td>{{p}}</td>
+        <td>{{s}}</td>
+        {{ if t == 0}}
+        <td>-</td>
+        {{ else }}
+        <td>+</td>
+        {{ endif }}
+    </tr>
+    {{ endfor }}
+</table>
 
 {{ next_button }}
 
