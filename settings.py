@@ -5,7 +5,7 @@ SESSION_CONFIGS = [
         name='matching_market',
         display_name="Matching Market with Occupied Spaces",
         app_sequence=['matching_market'],
-        num_demo_participants=2,
+        num_demo_participants=4,
     ),
 ]
 
@@ -20,6 +20,15 @@ SESSION_CONFIG_DEFAULTS = dict(
 
 PARTICIPANT_FIELDS = []
 SESSION_FIELDS = []
+
+ROOMS = [
+    dict(
+        name='session_room',
+        display_name='Session Room',
+        participant_label_file='_rooms/participant_label.txt',
+        # use_secure_urls=True
+    ),
+]
 
 # ISO-639 code
 # for example: de, fr, ja, ko, zh-hans

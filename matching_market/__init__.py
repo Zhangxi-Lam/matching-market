@@ -10,7 +10,7 @@ config = ConfigParser("matching_market/config/config.csv")
 
 class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
-    PLAYERS_PER_GROUP = 2
+    PLAYERS_PER_GROUP = 4
     NUM_ROUNDS = 20
 
 
