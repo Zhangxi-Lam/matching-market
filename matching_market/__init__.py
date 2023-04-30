@@ -4,6 +4,8 @@ from .matching_system import MatchingSystem
 from .config_parser import ConfigParser
 from .logger import Logger
 import numpy as np
+import random
+import time
 
 pref_controllers = {}
 loggers = {}
@@ -13,6 +15,7 @@ class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
     PLAYERS_PER_GROUP = 2
     NUM_ROUNDS = 20
+    RANDOM_SEED = random.seed(time.time())
 
 
 class Subsession(BaseSubsession):
@@ -52,21 +55,21 @@ class Player(BasePlayer):
                     resident_space_term = r[2]
             if space != self.id_in_group and term == 0 and resident_space_term == 1:
                 payoff -= 50
-        self.payoff = payoff
+        return payoff
 
 
 class WelcomePage(Page):
-    def is_displayed(player):
+    def is_displayed(player: Player):
         return player.group.round_number == 1
 
 
 class InstructionPage(Page):
-    def is_displayed(player):
+    def is_displayed(player: Player):
         return player.group.round_number == 1
 
 
 class MatchingPage(Page):
-    def is_displayed(player):
+    def is_displayed(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
         return config.has_round_config(player.group.round_number)
 
@@ -99,7 +102,7 @@ class WaitResult(WaitPage):
 
 
 class RoundResults(Page):
-    def is_displayed(player):
+    def is_displayed(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
         return config.has_round_config(player.group.round_number)
 
@@ -111,20 +114,27 @@ class RoundResults(Page):
         controller = pref_controllers[round_num][group.id_in_subsession]
         matching_system = MatchingSystem(controller)
         result = matching_system.get_matching_result(c["matching"], c["r"])
-        player.compute_payoff(
+        payoff = player.compute_payoff(
             result, controller.get_player_original_preference(
                 player.id_in_group),
             c["penalty"],
             c["r"]
         )
-        print(player.id_in_group, result, player.payoff)
+        print(player.id_in_group, result, payoff)
         id_in_subsession = group.id_in_subsession
         if id_in_subsession not in loggers:
             loggers[id_in_subsession] = Logger(id_in_subsession)
         loggers[id_in_subsession].add_round_result(
-            round_num, controller, result)
+            player.id_in_group,
+            round_num, controller, result, payoff)
         return {"result": result,
+                "payoff": payoff,
                 "preference": controller.get_player_custom_preference(player.id_in_group)}
+
+
+class DebugPage(Page):
+    def vars_for_template(player: Player):
+        pass
 
 
 class FinalResults(Page):
@@ -133,8 +143,13 @@ class FinalResults(Page):
         return player.group.round_number == config.get_num_round()
 
     def vars_for_template(player: Player):
+        config = ConfigParser(player.group.subsession.config_file_path)
+        payoff = loggers[player.group.id_in_subsession].get_player_final_payoff(
+            player.id_in_group, C.RANDOM_SEED, config)
         for logger in loggers.values():
             logger.write()
+
+        return {"payoff": payoff}
 
 
 page_sequence = [WelcomePage, InstructionPage,
