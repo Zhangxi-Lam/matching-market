@@ -7,7 +7,6 @@ import numpy as np
 
 pref_controllers = {}
 loggers = {}
-config = ConfigParser("matching_market/config/config.csv")
 
 
 class C(BaseConstants):
@@ -17,12 +16,15 @@ class C(BaseConstants):
 
 
 class Subsession(BaseSubsession):
-    pass
+    config_file_path = models.StringField()
 
 
 def creating_session(subsession: Subsession):
     # Read switch_group and switch_type settings from the first row. switch_type
     # only works when switch_group=True
+    subsession.config_file_path = 'matching_market/config/' + \
+        subsession.session.config['config_file']
+    config = ConfigParser(subsession.config_file_path)
     c = config.get_round_config(1)
     fixed_id_in_group = not c["switch_type"]
     if c["switch_group"]:
@@ -65,6 +67,7 @@ class InstructionPage(Page):
 
 class MatchingPage(Page):
     def is_displayed(player):
+        config = ConfigParser(player.group.subsession.config_file_path)
         return config.has_round_config(player.group.round_number)
 
     def vars_for_template(player: Player):
@@ -76,6 +79,7 @@ class MatchingPage(Page):
         if group.id_in_subsession not in pref_controllers[round_num]:
             pref_controllers[round_num][group.id_in_subsession] = PreferenceController(
                 group_size)
+        config = ConfigParser(player.group.subsession.config_file_path)
         c = config.get_round_config(round_num)
         controller = pref_controllers[round_num][group.id_in_subsession]
         controller.generate_original_preference_for_id(
@@ -96,11 +100,13 @@ class WaitResult(WaitPage):
 
 class RoundResults(Page):
     def is_displayed(player):
+        config = ConfigParser(player.group.subsession.config_file_path)
         return config.has_round_config(player.group.round_number)
 
     def vars_for_template(player: Player):
         group = player.group
         round_num = group.round_number
+        config = ConfigParser(player.group.subsession.config_file_path)
         c = config.get_round_config(round_num)
         controller = pref_controllers[round_num][group.id_in_subsession]
         matching_system = MatchingSystem(controller)
@@ -123,6 +129,7 @@ class RoundResults(Page):
 
 class FinalResults(Page):
     def is_displayed(player):
+        config = ConfigParser(player.group.subsession.config_file_path)
         return player.group.round_number == config.get_num_round()
 
     def vars_for_template(player: Player):

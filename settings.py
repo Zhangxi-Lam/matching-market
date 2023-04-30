@@ -6,6 +6,7 @@ SESSION_CONFIGS = [
         display_name="Matching Market with Occupied Spaces",
         app_sequence=['matching_market'],
         num_demo_participants=2,
+        config_file='config.csv'
     ),
 ]
 
