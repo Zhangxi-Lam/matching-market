@@ -2,9 +2,11 @@ from otree.api import *
 from .preference_controller import PreferenceController
 from .matching_system import MatchingSystem
 from .config_parser import ConfigParser
+from .logger import Logger
 import numpy as np
 
-controller = PreferenceController()
+pref_controllers = {}
+loggers = {}
 config = ConfigParser("matching_market/config/config.csv")
 
 
@@ -32,7 +34,6 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-
     def compute_payoff(self, result, original_pref, has_penalty, r):
         space, term = None, None
         for r in result:
@@ -56,10 +57,6 @@ class WelcomePage(Page):
     def is_displayed(player):
         return player.group.round_number == 1
 
-    def vars_for_template(player: Player):
-        group_size = len(player.group.get_players())
-        controller.set_group_size(group_size)
-
 
 class InstructionPage(Page):
     def is_displayed(player):
@@ -71,14 +68,23 @@ class MatchingPage(Page):
         return config.has_round_config(player.group.round_number)
 
     def vars_for_template(player: Player):
-        group_size = len(player.group.get_players())
-        c = config.get_round_config(player.group.round_number)
+        group = player.group
+        round_num = group.round_number
+        group_size = len(group.get_players())
+        if round_num not in pref_controllers:
+            pref_controllers[round_num] = {}
+        if group.id_in_subsession not in pref_controllers[round_num]:
+            pref_controllers[round_num][group.id_in_subsession] = PreferenceController(
+                group_size)
+        c = config.get_round_config(round_num)
+        controller = pref_controllers[round_num][group.id_in_subsession]
         controller.generate_original_preference_for_id(
-            player.group.round_number, player.id_in_group, c["r"])
+            round_num, player.id_in_group, c["r"])
         return {"group_size": group_size,
                 "preference": controller.get_player_original_preference(player.id_in_group)}
 
     def live_method(player: Player, data):
+        controller = pref_controllers[player.group.round_number][player.group.id_in_subsession]
         controller.set_player_custom_preference(
             player.id_in_group, data['preference'])
 
@@ -93,7 +99,10 @@ class RoundResults(Page):
         return config.has_round_config(player.group.round_number)
 
     def vars_for_template(player: Player):
-        c = config.get_round_config(player.round_number)
+        group = player.group
+        round_num = group.round_number
+        c = config.get_round_config(round_num)
+        controller = pref_controllers[round_num][group.id_in_subsession]
         matching_system = MatchingSystem(controller)
         result = matching_system.get_matching_result(c["matching"], c["r"])
         player.compute_payoff(
@@ -103,8 +112,24 @@ class RoundResults(Page):
             c["r"]
         )
         print(player.id_in_group, result, player.payoff)
-        return {"result": result}
+        id_in_subsession = group.id_in_subsession
+        if id_in_subsession not in loggers:
+            loggers[id_in_subsession] = Logger(id_in_subsession)
+        loggers[id_in_subsession].add_round_result(
+            round_num, controller, result)
+        return {"result": result,
+                "preference": controller.get_player_custom_preference(player.id_in_group)}
+
+
+class FinalResults(Page):
+    def is_displayed(player):
+        return player.group.round_number == config.get_num_round()
+
+    def vars_for_template(player: Player):
+        for logger in loggers.values():
+            logger.write()
 
 
 page_sequence = [WelcomePage, InstructionPage,
-                 MatchingPage, WaitResult, RoundResults]
+                 MatchingPage, WaitResult, RoundResults,
+                 FinalResults]

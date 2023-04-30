@@ -89,7 +89,8 @@ Your player ID: {{player.id_in_group}}
             if (cells.length == 3) {
                 var id = parseInt(cells[0].textContent);
                 var term = cells[1].textContent == "-" ? 0 : 1;
-                preference.push([id, term]);
+                var payoff = parseInt(cells[2].textContent);
+                preference.push([id, term, payoff]);
             }
         });
         liveSend({
