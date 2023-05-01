@@ -134,7 +134,7 @@ class RoundResults(Page):
 
 class DebugPage(Page):
     def vars_for_template(player: Player):
-        pass
+        return loggers[player.group.id_in_subsession].debug_message(player.round_number, len(player.group.get_players()))
 
 
 class FinalResults(Page):
@@ -153,5 +153,5 @@ class FinalResults(Page):
 
 
 page_sequence = [WelcomePage, InstructionPage,
-                 MatchingPage, WaitResult, RoundResults,
+                 MatchingPage, WaitResult, RoundResults, DebugPage,
                  FinalResults]
