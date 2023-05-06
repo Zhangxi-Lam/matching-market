@@ -3,66 +3,96 @@ Round Results
 {{ endblock }}
 {{ block content }}
 <style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .player-info {
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .pref-table,
+    .alloc-table {
+        grid-row: 2;
+        margin: 5px;
+
+    }
+
+    button {
+        margin-top: 10px;
+    }
+
     th,
     td {
-        border: 1px solid black;
+        padding: 5px;
+        border: 2px solid black;
         height: 10px;
         text-align: center;
     }
+
+    th {
+        background-color: bisque;
+    }
 </style>
 
-<p>
-Based on the algorithm and players' deicisons,
-the final space allocation is:
-</p>
-<br>
-Your payoff is: {{payoff}}
+<div class="grid-container">
+    <div class="player-info">
+        <b>Round </b>: {{player.round_number}}
+        <br>
+        <b>Your player ID</b>: {{player.id_in_group}}
+        <br>
+        <b>Your payoff is</b>: {{payoff}}
+        <br>
+        Please press next to move to the next round.
+    </div>
 
-<h1>Your final choice</h1>
-<table id="final-pref-table">
-    <tr>
-        <th>Space</th>
-        <th>Term</th>
-        <th>Payoff</th>
-    </tr>
-    {{ for space, term, payoff in preference }}
-    <tr>
-        <td>{{space}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-        <td>{{payoff}}</td>
-    </tr>
-    {{ endfor }}
-</table>
+    <div class="pref-table">
+        <h5>Your Final Choice</h5>
+        <table id="final-pref-table">
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Payoff</th>
+            </tr>
+            {{ for space, term, payoff in preference }}
+            <tr>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{payoff}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
 
-<h1>Final Allocation</h1>
-<table>
-    <tr>
-        <th>Player ID</th>
-        <th>Space ID</th>
-        <th>Term</th>
-    </tr>
-    {{ for p, s, t, _ in result }}
-    <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
-        <td>{{p}}</td>
-        <td>{{s}}</td>
-        {{ if t == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-    </tr>
-    {{ endfor }}
-</table>
 
-<p>
-Your payoff in round {{player.round_number}} is: {{player.payoff}}. <br>
-Please press next to move to the next round.
-</p>
-
+    <div class="alloc-table">
+        <h5>Final Allocation</h5>
+        <table>
+            <tr>
+                <th>Player ID</th>
+                <th>Space ID</th>
+                <th>Term</th>
+            </tr>
+            {{ for p, s, t, _ in result }}
+            <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
+                <td>{{p}}</td>
+                <td>{{s}}</td>
+                {{ if t == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
+</div>
 {{ next_button }}
 
 {{ endblock }}
