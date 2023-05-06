@@ -7,61 +7,95 @@ Decision
 {{ endblock }}
 {{ block content }}
 <style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .player-info {
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .orig-pref-table,
+    .pref-table {
+        grid-row: 2;
+        margin: 5px;
+    }
+
+    #send-pref {
+        padding: 5px;
+        margin-top: 5px;
+    }
+
     th,
     td {
-        border: 1px solid black;
+        padding: 5px;
+        border: 2px solid black;
         height: 10px;
         text-align: center;
     }
+
+    th {
+        background-color: bisque;
+    }
 </style>
 
-Round number: {{player.round_number}}
-<br>
-Group size: {{group_size}}
-<br>
-Your player ID: {{player.id_in_group}}
+<div class="grid-container">
+    <div class="player-info">
+        <b>Round</b>: {{player.round_number}}
+        <br>
+        <b>Group size</b>: {{group_size}}
+        <br>
+        <b>Your player ID</b>: {{player.id_in_group}}
+    </div>
 
 
-<h1>Preference Table</h1>
-<table id="orig-pref-table">
-    <tr>
-        <th>Space</th>
-        <th>Term</th>
-        <th>Payoff</th>
-    </tr>
-    {{ for space, term, payoff in preference }}
-    <tr>
-        <td>{{space}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-        <td>{{payoff}}</td>
-    </tr>
-    {{ endfor }}
-</table>
+    <div class="orig-pref-table">
+        <h5>Preference Table</h5>
+        <table id="orig-pref-table">
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Payoff</th>
+            </tr>
+            {{ for space, term, payoff in preference }}
+            <tr>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{payoff}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
 
-<h1>Decision Sheet</h1>
-<table id="pref-table">
-    <tr>
-        <th>Space ID</th>
-        <th>Term</th>
-        <th>Payoff</th>
-    </tr>
-    {{ for space, term, payoff in preference }}
-    <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
-        <td>{{space}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-        <td>{{payoff}}</td>
-    </tr>
-    {{ endfor }}
-</table>
-<button id="send-pref" onclick="send_preferences()">Send</button>
+    <div class="pref-table">
+        <h5>Decision Sheet</h5>
+        <table id="pref-table">
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Payoff</th>
+            </tr>
+            {{ for space, term, payoff in preference }}
+            <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{payoff}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+        <button id="send-pref" onclick="send_preferences()">Send</button>
+    </div>
+</div>
 
 <script>
     var row;
