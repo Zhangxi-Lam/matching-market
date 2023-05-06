@@ -1,5 +1,5 @@
 {{ block title }}
-Round Results Page
+Round Results
 {{ endblock }}
 {{ block content }}
 <style>
@@ -11,7 +11,10 @@ Round Results Page
     }
 </style>
 
-Round number: {{player.round_number}}
+<p>
+Based on the algorithm and players' deicisons,
+the final space allocation is:
+</p>
 <br>
 Your payoff is: {{payoff}}
 
@@ -38,8 +41,8 @@ Your payoff is: {{payoff}}
 <h1>Final Allocation</h1>
 <table>
     <tr>
-        <th>Player</th>
-        <th>Space</th>
+        <th>Player ID</th>
+        <th>Space ID</th>
         <th>Term</th>
     </tr>
     {{ for p, s, t, _ in result }}
@@ -54,6 +57,11 @@ Your payoff is: {{payoff}}
     </tr>
     {{ endfor }}
 </table>
+
+<p>
+Your payoff in round {{player.round_number}} is: {{player.payoff}}. <br>
+Please press next to move to the next round.
+</p>
 
 {{ next_button }}
 

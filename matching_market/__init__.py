@@ -13,7 +13,7 @@ loggers = {}
 
 class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
-    PLAYERS_PER_GROUP = 2
+    PLAYERS_PER_GROUP = 4
     NUM_ROUNDS = 20
     RANDOM_SEED = random.seed(time.time())
 
