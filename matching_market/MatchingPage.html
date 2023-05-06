@@ -15,10 +15,34 @@ Decision
     }
 </style>
 
-This is round {{player.round_number}}
+Round number: {{player.round_number}}
 <br>
-Number of participants: {{group_size}}
+Group size: {{group_size}}
+<br>
+Your player ID: {{player.id_in_group}}
 
+
+<h1>Preference Table</h1>
+<table id="orig-pref-table">
+    <tr>
+        <th>Space</th>
+        <th>Term</th>
+        <th>Payoff</th>
+    </tr>
+    {{ for space, term, payoff in preference }}
+    <tr>
+        <td>{{space}}</td>
+        {{ if term == 0}}
+        <td>-</td>
+        {{ else }}
+        <td>+</td>
+        {{ endif }}
+        <td>{{payoff}}</td>
+    </tr>
+    {{ endfor }}
+</table>
+
+<h1>Decision Sheet</h1>
 <table id="pref-table">
     <tr>
         <th>Space ID</th>
@@ -36,8 +60,8 @@ Number of participants: {{group_size}}
         <td>{{payoff}}</td>
     </tr>
     {{ endfor }}
-    <button id="send-pref" onclick="send_preferences()">Send</button>
 </table>
+<button id="send-pref" onclick="send_preferences()">Send</button>
 
 <script>
     var row;
@@ -65,7 +89,8 @@ Number of participants: {{group_size}}
             if (cells.length == 3) {
                 var id = parseInt(cells[0].textContent);
                 var term = cells[1].textContent == "-" ? 0 : 1;
-                preference.push([id, term]);
+                var payoff = parseInt(cells[2].textContent);
+                preference.push([id, term, payoff]);
             }
         });
         liveSend({

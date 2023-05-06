@@ -38,6 +38,9 @@ class ConfigParser:
         else:
             raise ValueError("Doesn't have config for round " + str(round))
 
+    def get_num_round(self):
+        return len(self.configs)
+
 
 def main():
     config = ConfigParser("config/config.csv")
