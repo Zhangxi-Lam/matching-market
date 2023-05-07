@@ -11,6 +11,8 @@ class ConfigParser:
                 if not keys:
                     keys = row
                 else:
+                    if not row:
+                        continue
                     tmp = {}
                     for i in range(len(row)):
                         value = row[i]
@@ -44,7 +46,7 @@ class ConfigParser:
 
 def main():
     config = ConfigParser("config/config.csv")
-    print(config.get_round_config(1))
+    print(config.configs)
 
 
 if __name__ == "__main__":

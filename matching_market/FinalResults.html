@@ -2,8 +2,21 @@
 Final Results Page
 {{ endblock }}
 {{ block content }}
-Your final payoff is: {{ payoff }}
+<style>
+    .info {
+        padding: 20px;
+        background-color: rgb(202, 186, 15);
+        color: white;
+    }
+</style>
 
-{{ next_button }}
+<h4 class="info">Congratulations! You have completed the experiment.</h4>
+Your final payment is <b> {{payoff}} </b> from trading period <b> {{ selected_round }} </b>.
+<br>
+Your cash payment is the final payment divided by 50, plus the 5 dollar show-up fee.
+The payment will be sent through Venmo in 48 hours.
+<br>
+Please confirm with the experimenter before you leave the room.
+Thank you again for your participation!
 
 {{ endblock }}

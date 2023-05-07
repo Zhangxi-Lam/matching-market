@@ -3,95 +3,119 @@ Debug Page
 {{ endblock }}
 {{ block content }}
 <style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: auto auto;
+    }
+
+    .grid-table {
+        margin: 5px;
+    }
+
     th,
     td {
-        border: 1px solid black;
+        padding: 5px;
+        border: 2px solid black;
         height: 10px;
         text-align: center;
     }
+
+    th {
+        background-color: bisque;
+    }
 </style>
 
-<h1>Player original preferences</h1>
-<table>
-    <tr>
-        <th>Space</th>
-        <th>Term</th>
-        <th>Payoff</th>
-        <th>Player</th>
-    </tr>
-    {{ for space, term, payoff, player in player_original_preferences }}
-    <tr>
-        <td>{{space}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-        <td>{{payoff}}</td>
-        <td>{{player}}</td>
-    </tr>
-    {{ endfor }}
-</table>
+<div class="grid-container">
+    <div class="grid-table">
+        <h5>Player original preferences</h5>
+        <table>
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Payoff</th>
+                <th>Player</th>
+            </tr>
+            {{ for space, term, payoff, player in player_original_preferences }}
+            <tr>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{payoff}}</td>
+                <td>{{player}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
 
-<h1>Player custom preferences</h1>
-<table>
-    <tr>
-        <th>Space</th>
-        <th>Term</th>
-        <th>Payoff</th>
-        <th>Player</th>
-    </tr>
-    {{ for space, term, payoff, player in player_custom_preferences }}
-    <tr>
-        <td>{{space}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-        <td>{{payoff}}</td>
-        <td>{{player}}</td>
-    </tr>
-    {{ endfor }}
-</table>
+    <div class="grid-table">
+        <h5>Player custom preferences</h5>
+        <table>
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Payoff</th>
+                <th>Player</th>
+            </tr>
+            {{ for space, term, payoff, player in player_custom_preferences }}
+            <tr>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{payoff}}</td>
+                <td>{{player}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
 
-<h1>Space original preferences</h1>
-<table>
-    <tr>
-        <th>Player</th>
-        <th>Term</th>
-        <th>Space</th>
-    </tr>
-    {{ for player, term, space in space_original_preferences }}
-    <tr>
-        <td>{{player}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-        <td>{{space}}</td>
-    </tr>
-    {{ endfor }}
-</table>
+    <div class="grid-table">
+        <h5>Space original preferences</h5>
+        <table>
+            <tr>
+                <th>Player</th>
+                <th>Term</th>
+                <th>Space</th>
+            </tr>
+            {{ for player, term, space in space_original_preferences }}
+            <tr>
+                <td>{{player}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{space}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
 
-<h1>Final allocation</h1>
-<table>
-    <tr>
-        <th>Player</th>
-        <th>Space</th>
-        <th>Term</th>
-    </tr>
-    {{ for player, space, term in final_allocations }}
-    <tr>
-        <td>{{player}}</td>
-        <td>{{space}}</td>
-        {{ if term == 0}}
-        <td>-</td>
-        {{ else }}
-        <td>+</td>
-        {{ endif }}
-    </tr>
-    {{ endfor }}
-</table>
+    <div class="grid-table">
+        <h5>Final allocation</h5>
+        <table>
+            <tr>
+                <th>Player</th>
+                <th>Space</th>
+                <th>Term</th>
+            </tr>
+            {{ for player, space, term in final_allocations }}
+            <tr>
+                <td>{{player}}</td>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+            </tr>
+            {{ endfor }}
+        </table>
+    </div>
+</div>
 {{ endblock }}

@@ -144,12 +144,12 @@ class FinalResults(Page):
 
     def vars_for_template(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
-        payoff = loggers[player.group.id_in_subsession].get_player_final_payoff(
+        payoff, selected_round = loggers[player.group.id_in_subsession].get_player_final_payoff(
             player.id_in_group, C.RANDOM_SEED, config)
         for logger in loggers.values():
             logger.write()
 
-        return {"payoff": payoff}
+        return {"payoff": payoff, "selected_round": selected_round}
 
 
 page_sequence = [WelcomePage, InstructionPage,

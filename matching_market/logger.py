@@ -40,7 +40,7 @@ class Logger:
         random.seed(seed)
         selected_round_index = random.randint(0, len(non_practice_rounds) - 1)
         seleced_round = non_practice_rounds[selected_round_index]
-        return self.payoffs[seleced_round][id_in_group]
+        return self.payoffs[seleced_round][id_in_group], seleced_round
 
     def debug_message(self, round_num, n):
         player_orig_prefs = []
