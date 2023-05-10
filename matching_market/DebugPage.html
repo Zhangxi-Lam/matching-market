@@ -30,10 +30,10 @@ Debug Page
         <h5>Player original preferences</h5>
         <table>
             <tr>
-                <th>Space</th>
+                <th>Space ID</th>
                 <th>Term</th>
                 <th>Payoff</th>
-                <th>Player</th>
+                <th>Player ID</th>
             </tr>
             {{ for space, term, payoff, player in player_original_preferences }}
             <tr>
@@ -54,10 +54,10 @@ Debug Page
         <h5>Player custom preferences</h5>
         <table>
             <tr>
-                <th>Space</th>
+                <th>Space ID</th>
                 <th>Term</th>
                 <th>Payoff</th>
-                <th>Player</th>
+                <th>Player ID</th>
             </tr>
             {{ for space, term, payoff, player in player_custom_preferences }}
             <tr>
@@ -78,9 +78,9 @@ Debug Page
         <h5>Space original preferences</h5>
         <table>
             <tr>
-                <th>Player</th>
+                <th>Player ID</th>
                 <th>Term</th>
-                <th>Space</th>
+                <th>Space ID</th>
             </tr>
             {{ for player, term, space in space_original_preferences }}
             <tr>
@@ -97,11 +97,11 @@ Debug Page
     </div>
 
     <div class="grid-table">
-        <h5>Final allocation</h5>
+        <h5>Group Final Allocation</h5>
         <table>
             <tr>
-                <th>Player</th>
-                <th>Space</th>
+                <th>Player ID</th>
+                <th>Space ID</th>
                 <th>Term</th>
             </tr>
             {{ for player, space, term in final_allocations }}

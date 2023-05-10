@@ -69,6 +69,7 @@ class InstructionPage(Page):
 
 
 class MatchingPage(Page):
+    timeout_seconds = 120
     def is_displayed(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
         return config.has_round_config(player.group.round_number)
@@ -102,6 +103,7 @@ class WaitResult(WaitPage):
 
 
 class RoundResults(Page):
+    timeout_seconds = 30
     def is_displayed(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
         return config.has_round_config(player.group.round_number)
