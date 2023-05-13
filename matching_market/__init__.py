@@ -129,6 +129,7 @@ class RoundResults(Page):
         loggers[id_in_subsession].add_round_result(
             player.id_in_group,
             round_num, controller, result, payoff)
+        loggers[id_in_subsession].write()
         return {"result": result,
                 "payoff": payoff,
                 "preference": controller.get_player_custom_preference(player.id_in_group)}
@@ -148,8 +149,8 @@ class FinalResults(Page):
         config = ConfigParser(player.group.subsession.config_file_path)
         payoff, selected_round = loggers[player.group.id_in_subsession].get_player_final_payoff(
             player.id_in_group, C.RANDOM_SEED, config)
-        for logger in loggers.values():
-            logger.write()
+        logger = loggers[player.group.id_in_subsession]
+        logger.write()
 
         return {"payoff": payoff, "selected_round": selected_round}
 

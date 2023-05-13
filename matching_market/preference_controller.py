@@ -46,8 +46,26 @@ class PreferenceController:
     def get_player_custom_preference(self, id_in_group):
         return self.player_custom_preferences[id_in_group - 1]
 
+    def player_preference_to_log(self, prefs):
+        res = []
+        for p in prefs:
+            res.append({"space_id": p[0],
+                        "term": p[1],
+                        "payoff": p[2]
+                        })
+        return res
+
     def get_space_original_preference(self, id_in_group):
         return self.space_original_preferences[id_in_group - 1]
+
+    def space_preference_to_log(self, prefs):
+        res = []
+        for p in prefs:
+            res.append({
+                "player_id": p[0],
+                "term": p[1]
+            })
+        return res
 
     def player_pref_to_numpy_array(self, player_pref):
         res = []
