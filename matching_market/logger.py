@@ -52,9 +52,6 @@ class Logger:
             })
 
     def get_player_final_payoff(self, id_in_group, seed, config: ConfigParser):
-        # Check if we have computed the final payoff for this player
-        if id_in_group in self.final_payoffs:
-            return
         non_practice_rounds = []
         for r in range(config.get_num_round()):
             if not config.get_round_config(r + 1)["practice"]:
