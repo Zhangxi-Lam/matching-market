@@ -15,6 +15,7 @@ class Logger:
         self.log_data = []
         self.payoffs = {}
         self.final_payoffs = {}
+        self.selected_round = None
 
     def add_round_result(self, id_in_group, round_num, controller: PreferenceController, results, payoff):
         # Check if we have added result for this player
@@ -51,20 +52,24 @@ class Logger:
                 }
             })
 
-    def get_player_final_payoff(self, id_in_group, seed, config: ConfigParser):
+    def get_player_final_payoff(self, id_in_group, config: ConfigParser):
+        if not self.selected_round:
+            self.selected_round = self.select_round_for_final_payoff(config)
+        self.final_payoffs[id_in_group] = {
+            'player_id': id_in_group,
+            'selected_round': self.selected_round,
+            'payoff': self.payoffs[self.selected_round][id_in_group]
+        }
+        return self.payoffs[self.selected_round][id_in_group], self.selected_round
+
+    def select_round_for_final_payoff(self, config: ConfigParser):
         non_practice_rounds = []
         for r in range(config.get_num_round()):
             if not config.get_round_config(r + 1)["practice"]:
                 non_practice_rounds.append(r + 1)
-        random.seed(seed)
         selected_round_index = random.randint(0, len(non_practice_rounds) - 1)
         selected_round = non_practice_rounds[selected_round_index]
-        self.final_payoffs[id_in_group] = {
-            'player_id': id_in_group,
-            'selected_round': selected_round,
-            'payoff': self.payoffs[selected_round][id_in_group]
-        }
-        return self.payoffs[selected_round][id_in_group], selected_round
+        return selected_round
 
     def debug_message(self, round_num, n):
         player_orig_prefs = []

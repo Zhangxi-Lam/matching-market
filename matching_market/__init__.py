@@ -15,7 +15,6 @@ class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
     PLAYERS_PER_GROUP = 4
     NUM_ROUNDS = 20
-    RANDOM_SEED = random.seed(time.time())
 
 
 class Subsession(BaseSubsession):
@@ -150,7 +149,7 @@ class FinalResults(Page):
     def vars_for_template(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
         payoff, selected_round = loggers[player.group.id_in_subsession].get_player_final_payoff(
-            player.id_in_group, C.RANDOM_SEED, config)
+            player.id_in_group, config)
         logger = loggers[player.group.id_in_subsession]
         logger.write()
 
