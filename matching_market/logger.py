@@ -18,7 +18,7 @@ class Logger:
 
     def add_round_result(self, id_in_group, round_num, controller: PreferenceController, results, payoff):
         # Check if we have added result for this player
-        if round_num in self.payoffs and id_in_group in self.payoffs[round_num][id_in_group]:
+        if round_num in self.payoffs and id_in_group in self.payoffs[round_num]:
             return
         if round_num not in self.payoffs:
             self.payoffs[round_num] = {}
