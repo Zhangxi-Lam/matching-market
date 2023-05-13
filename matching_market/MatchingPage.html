@@ -93,7 +93,7 @@ Decision
             </tr>
             {{ endfor }}
         </table>
-        <button id="send-pref" onclick="send_preferences()">Send</button>
+        <button id="send-pref" onclick="sendPref()">Send</button>
     </div>
 </div>
 
@@ -113,7 +113,7 @@ Decision
             e.target.parentNode.before(row);
     }
 
-    function send_preferences() {
+    function sendPref() {
         const table = document.getElementById("pref-table");
         const rows = table.querySelectorAll("tr");
 
@@ -131,6 +131,10 @@ Decision
             'preference': preference
         });
     }
+
+    var updatePref = window.setInterval(function () {
+        sendPref();
+    }, 1000);
 </script>
 
 {{ endblock }}
