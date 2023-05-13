@@ -17,6 +17,9 @@ class Logger:
         self.final_payoffs = {}
 
     def add_round_result(self, id_in_group, round_num, controller: PreferenceController, results, payoff):
+        # Check if we have added result for this player
+        if round_num in self.payoffs and id_in_group in self.payoffs[round_num][id_in_group]:
+            return
         if round_num not in self.payoffs:
             self.payoffs[round_num] = {}
         self.payoffs[round_num][id_in_group] = payoff
@@ -49,7 +52,9 @@ class Logger:
             })
 
     def get_player_final_payoff(self, id_in_group, seed, config: ConfigParser):
-        print("final " + str(id_in_group))
+        # Check if we have computed the final payoff for this player
+        if id_in_group in self.final_payoffs:
+            return
         non_practice_rounds = []
         for r in range(config.get_num_round()):
             if not config.get_round_config(r + 1)["practice"]:
