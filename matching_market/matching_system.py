@@ -110,7 +110,7 @@ class MatchingSystem:
         # similarly, remove these contracts from players' preference
         # for residents
         for i in range(r):
-            pref_player[i] = pref_player[i][((pref_player[i][:, 0] != pref_player[i][:, 1]) |
+            pref_player[i] = pref_player[i][((pref_player[i][:, 0] == pref_player[i][:, 1]) |
                                             (pref_player[i][:, 1] > r) |
                                             (pref_player[i][:, 2] == 0))]
 
@@ -209,11 +209,13 @@ class MatchingSystem:
                     space_acum[s - 1][k][3] = 1
                     break
             # for the space selected update the corresponding choice set
-            accept_contract = space_acum[s -
-                                         1][space_acum[s - 1][:, 3] == 1, :]
+            accept_contract = space_acum[s - 1][space_acum[s - 1][:, 3] == 1, :]
             if accept_contract.shape[0] >= 1:
                 accept_contract = accept_contract[0]
                 space_choi.iloc[s - 1, :] = accept_contract.reshape((4,))
+            else:
+                continue
+
             # if the player is resident lock the resident's space with t- contract
             if (p <= r) and (accept_contract[0] == p) and (accept_contract[1] != p) and (accept_contract[2] == 0):
                 # send back a claim contract to block the t+ term of the resident's space
@@ -222,8 +224,7 @@ class MatchingSystem:
                         # mark the claim contract status = 2
                         space_acum[p - 1][k, 3] = 2
                 # the resident's space rerun its choice function
-                rerun_contract = space_acum[p -
-                                            1][space_acum[p - 1][:, 3] == 1, :]
+                rerun_contract = space_acum[p - 1][space_acum[p - 1][:, 3] == 1, :]
                 if rerun_contract.shape[0] >= 1:
                     rerun_contract = rerun_contract[0]
                     space_choi.iloc[p - 1, :] = rerun_contract.reshape((4,))
@@ -325,11 +326,12 @@ class MatchingSystem:
                     break
 
             # for the space selected update the corresponding choice set
-            accept_contract = space_acum[s -
-                                         1][space_acum[s - 1][:, 3] == 1, :]
+            accept_contract = space_acum[s - 1][space_acum[s - 1][:, 3] == 1, :]
             if accept_contract.shape[0] >= 1:
                 accept_contract = accept_contract[0]
                 space_choi.iloc[s - 1, :] = accept_contract.reshape((4,))
+            else:
+                continue
 
             # if the player is resident lock the resident's space with t- contract
             if (p <= r) and (accept_contract[0] == p) and (accept_contract[1] != p) and (accept_contract[2] == 0):
@@ -339,8 +341,7 @@ class MatchingSystem:
                         # mark the claim contract status = 2
                         space_acum[p - 1][k, 3] = 2
                 # the resident's space rerun its choice function
-                rerun_contract = space_acum[p -
-                                            1][space_acum[p - 1][:, 3] == 1, :]
+                rerun_contract = space_acum[p - 1][space_acum[p - 1][:, 3] == 1, :]
                 if rerun_contract.shape[0] >= 1:
                     rerun_contract = rerun_contract[0]
                     space_choi.iloc[p - 1, :] = rerun_contract.reshape((4,))
