@@ -228,6 +228,19 @@ class MatchingSystem:
                 if rerun_contract.shape[0] >= 1:
                     rerun_contract = rerun_contract[0]
                     space_choi.iloc[p - 1, :] = rerun_contract.reshape((4,))
+
+                    # check if the new contract also belongs to a residents
+                    p2 = rerun_contract[0]
+                    if (p2 <= r) and (rerun_contract[1] != p2) and (rerun_contract[2] == 0):
+                        for k in range(space_acum[p2 - 1].shape[0]):
+                            if space_acum[p2 - 1][k, 0] != p2 and space_acum[p2 - 1][k, 2] == 1:
+                                space_acum[p2 - 1][k, 3] = 2
+                        rerun_contract2 = space_acum[p2 - 1][space_acum[p2 - 1][:, 3] == 1, :]
+                        if rerun_contract2.shape[0] >= 1:
+                            rerun_contract2 = rerun_contract2[0]
+                            space_choi.iloc[p2 - 1, :] = rerun_contract2.reshape((4,))
+                        else:
+                            space_choi.iloc[p2 - 1, :] = np.array([0, 0, 0, 0])
                 else:
                     space_choi.iloc[p - 1, :] = np.array([0, 0, 0, 0])
             # anyone who hold two contracts, she keeps the preferred one.
