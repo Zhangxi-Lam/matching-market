@@ -89,6 +89,7 @@ class MatchingPage(Page):
         controller.generate_original_preference_for_id(
             round_num, player.id_in_group, c["r"], c["payoff_multiplier"])
         return {"group_size": group_size,
+                "matching": c["matching"],
                 "preference": controller.get_player_original_preference(player.id_in_group)}
 
     def live_method(player: Player, data):
@@ -132,6 +133,7 @@ class RoundResults(Page):
             round_num, controller, result, payoff)
         loggers[id_in_subsession].write()
         return {"result": result,
+                "matching": c["matching"],
                 "payoff": payoff,
                 "preference": controller.get_player_custom_preference(player.id_in_group)}
 
