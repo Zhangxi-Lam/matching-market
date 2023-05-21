@@ -87,7 +87,7 @@ class MatchingPage(Page):
         c = config.get_round_config(round_num)
         controller = pref_controllers[round_num][group.id_in_subsession]
         controller.generate_original_preference_for_id(
-            round_num, player.id_in_group, c["r"])
+            round_num, player.id_in_group, c["r"], c["payoff_multiplier"])
         return {"group_size": group_size,
                 "preference": controller.get_player_original_preference(player.id_in_group)}
 

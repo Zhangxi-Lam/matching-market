@@ -14,15 +14,15 @@ class PreferenceController:
         return self.n
 
     # Generate the preferences for the id_in_group and its corresponding space_id
-    def generate_original_preference_for_id(self, round_number, id_in_group, r):
+    def generate_original_preference_for_id(self, round_number, id_in_group, r, payoff_multiplier):
         player_preference = []
         pref = list(range(0, self.n * 2))
         random.seed(round_number * 1e6 + id_in_group)
         random.shuffle(pref)
-        payoff = len(pref)
+        payoff = len(pref) * payoff_multiplier
         for p in pref:
             player_preference.append([int(p / 2) + 1, p % 2, payoff])
-            payoff -= 1
+            payoff -= payoff_multiplier
         self.player_original_preferences[id_in_group - 1] = player_preference
 
         space_id = id_in_group
