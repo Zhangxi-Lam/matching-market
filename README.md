@@ -78,3 +78,7 @@ If the program doesn't work for some reasons, you can try two things:
 2. Reset the otree database
 
 `otree resetdb`
+
+## Download matching data
+open download file
+path input ~/matching_market/data/data_1.json
