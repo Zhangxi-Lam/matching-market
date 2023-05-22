@@ -1,0 +1,5 @@
+round_number,switch_group,switch_type,r,matching,penalty,practice,payoff_multiplier
+1,True,True,2,DA,False,True,3
+2,True,True,2,BE,False,False,3
+3,True,True,2,CO,False,False,3
+4,True,True,2,SM,False,False,3

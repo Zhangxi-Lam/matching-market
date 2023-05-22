@@ -66,9 +66,14 @@ class InstructionPage(Page):
     def is_displayed(player: Player):
         return player.group.round_number == 1
 
+    def vars_for_template(player: Player):
+        config = ConfigParser(player.group.subsession.config_file_path)
+        c = config.get_round_config(round_num)
+        return {"matching": c["matching"]}
+
 
 class MatchingPage(Page):
-    timeout_seconds = 120
+    timeout_seconds = 90
 
     def is_displayed(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)

@@ -3,10 +3,10 @@ from os import environ
 SESSION_CONFIGS = [
     dict(
         name='matching_market',
-        display_name="Matching Market with Occupied Spaces",
+        display_name="Matching Market",
         app_sequence=['matching_market'],
         num_demo_participants=4,
-        config_file='config.csv'
+        config_file='demo.csv'
     ),
 ]
 
