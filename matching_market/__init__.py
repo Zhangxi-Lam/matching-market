@@ -95,14 +95,21 @@ class MatchingPage(Page):
         controller = pref_controllers[round_num][group.id_in_subsession]
         controller.generate_original_preference_for_id(
             round_num, player.id_in_group, c["r"], c["payoff_multiplier"])
+        preference = controller.get_player_original_preference(player.id_in_group)
         return {"group_size": group_size,
                 "matching": c["matching"],
-                "preference": controller.get_player_original_preference(player.id_in_group)}
+                "preference": MatchingPage.shuffle(preference)}
 
     def live_method(player: Player, data):
         controller = pref_controllers[player.group.round_number][player.group.id_in_subsession]
         controller.set_player_custom_preference(
             player.id_in_group, data['preference'])
+    
+    @staticmethod
+    def shuffle(preference):
+        shuffled_preference = preference[:]
+        random.shuffle(shuffled_preference)
+        return shuffled_preference
 
 
 class WaitResult(WaitPage):
