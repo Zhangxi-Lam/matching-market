@@ -6,8 +6,11 @@ class PreferenceController:
 
     def __init__(self, n):
         self.n = n
+        # player_original_preferences = [space_id, term, payoff]
         self.player_original_preferences = [[] for _ in range(n)]
+        # player_custom_preferences = [space_id, term, payoff]
         self.player_custom_preferences = [[] for _ in range(n)]
+        # space_custom_preferences = [player_id, term]
         self.space_original_preferences = [[] for _ in range(n)]
 
     def get_group_size(self):

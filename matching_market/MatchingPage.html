@@ -17,7 +17,6 @@ Decision
         margin: 5px;
     }
 
-    .orig-pref-table,
     .pref-table {
         grid-row: 2;
         margin: 5px;
@@ -53,15 +52,15 @@ Decision
     </div>
 
 
-    <div class="orig-pref-table">
+    <div class="pref-table">
         <h5>Your Preference Sheet</h5>
-        <table id="orig-pref-table">
+        <table>
             <tr>
                 <th>Space ID</th>
                 <th>Term</th>
                 <th>Payoff</th>
             </tr>
-            {{ for space, term, payoff in preference }}
+            {{ for space, term, payoff in player_pref }}
             <tr>
                 <td>{{space}}</td>
                 {{ if term == 0}}
@@ -83,7 +82,7 @@ Decision
                 <th>Term</th>
                 <th>Payoff</th>
             </tr>
-            {{ for space, term, payoff in preference }}
+            {{ for space, term, payoff in player_pref }}
             <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
                 <td>{{space}}</td>
                 {{ if term == 0}}
@@ -96,6 +95,28 @@ Decision
             {{ endfor }}
         </table>
         <button id="send-pref" onclick="sendPref()">Send</button>
+    </div>
+
+    <div class="pref-table">
+        <h5>Space Preference Sheet</h5>
+        <table>
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Ranking</th>
+            </tr>
+            {{ for space, term, ranking in space_pref }}
+            <tr>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{ranking}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
     </div>
 </div>
 
@@ -119,18 +140,18 @@ Decision
         const table = document.getElementById("pref-table");
         const rows = table.querySelectorAll("tr");
 
-        const preference = [];
+        const player_pref= [];
         rows.forEach((row) => {
             const cells = row.querySelectorAll("td");
             if (cells.length == 3) {
                 var id = parseInt(cells[0].textContent);
                 var term = cells[1].textContent == "-" ? 0 : 1;
                 var payoff = parseInt(cells[2].textContent);
-                preference.push([id, term, payoff]);
+                player_pref.push([id, term, payoff]);
             }
         });
         liveSend({
-            'preference': preference
+            'player_pref':player_pref 
         });
     }
 

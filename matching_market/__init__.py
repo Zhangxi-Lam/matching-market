@@ -7,6 +7,7 @@ import numpy as np
 import random
 import time
 
+# pref_controllers[round_num][id_in_subsession] = controller
 pref_controllers = {}
 loggers = {}
 
@@ -85,31 +86,48 @@ class MatchingPage(Page):
         group = player.group
         round_num = group.round_number
         group_size = len(group.get_players())
+        config = ConfigParser(player.group.subsession.config_file_path)
+        c = config.get_round_config(round_num)
         if round_num not in pref_controllers:
             pref_controllers[round_num] = {}
         if group.id_in_subsession not in pref_controllers[round_num]:
+            # If we haven't initialized this group, initialize all players' and spaces' preferences.
             pref_controllers[round_num][group.id_in_subsession] = PreferenceController(
                 group_size)
-        config = ConfigParser(player.group.subsession.config_file_path)
-        c = config.get_round_config(round_num)
-        controller = pref_controllers[round_num][group.id_in_subsession]
-        controller.generate_original_preference_for_id(
-            round_num, player.id_in_group, c["r"], c["payoff_multiplier"])
-        preference = controller.get_player_original_preference(player.id_in_group)
+            controller = pref_controllers[round_num][group.id_in_subsession]
+            for i in range(1, group_size + 1):
+                controller.generate_original_preference_for_id(
+                    round_num, i, c["r"], c["payoff_multiplier"])
+        else:
+            controller = pref_controllers[round_num][group.id_in_subsession]
+        player_pref = controller.get_player_original_preference(
+            player.id_in_group)
         return {"group_size": group_size,
                 "matching": c["matching"],
-                "preference": MatchingPage.shuffle(preference)}
+                "player_pref": MatchingPage.shuffle(player_pref),
+                "space_pref": MatchingPage.get_all_space_pref(controller, group_size, player.id_in_group)}
 
     def live_method(player: Player, data):
         controller = pref_controllers[player.group.round_number][player.group.id_in_subsession]
-        controller.set_player_custom_preference(
-            player.id_in_group, data['preference'])
-    
+        controller.set_player_custom_preference(player.id_in_group, data['player_pref'])
+
     @staticmethod
     def shuffle(preference):
         shuffled_preference = preference[:]
         random.shuffle(shuffled_preference)
         return shuffled_preference
+
+    @staticmethod
+    def get_all_space_pref(controller: PreferenceController, group_size, player_id):
+        prefs = []
+        for space_id in range(1, group_size + 1):
+            space_pref = controller.get_space_original_preference(space_id)
+            ranking = 1
+            for p in space_pref:
+                if p[0] == player_id:
+                    prefs.append([space_id, p[1], ranking])
+                    ranking += 1
+        return prefs
 
 
 class WaitResult(WaitPage):
