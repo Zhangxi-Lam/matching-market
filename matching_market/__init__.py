@@ -58,7 +58,6 @@ class Player(BasePlayer):
         self.payoff = payoff
         return payoff
     
-    # Final payoff = sum(non_pratice_round_payoff)
     def compute_final_payoff(self, round_payoffs, config: ConfigParser):
         player_id = self.id_in_group
         final_payoff = 0
@@ -122,7 +121,6 @@ class MatchingPage(Page):
         controller = pref_controllers[player.group.round_number][player.group.id_in_subsession]
         controller.set_player_custom_preference(player.id_in_group, data['player_pref'])
 
-    # Shuffle the player's original preference to be displayed
     @staticmethod
     def shuffle(preference):
         shuffled_preference = preference[:]

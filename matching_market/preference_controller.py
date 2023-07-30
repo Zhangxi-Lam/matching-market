@@ -18,19 +18,18 @@ class PreferenceController:
 
     # Generate the preferences for the player_id and its corresponding space_id
     def generate_original_preference_for_id(self, round_number, id_in_group, r, payoff_multiplier):
-        player_id = id_in_group
         player_preference = []
         # We have 2n combinations
         pref = list(range(0, self.n * 2))
         # Randomly shuffle the combinations
-        random.seed(round_number * 1e6 + player_id)
+        random.seed(round_number * 1e6 + id_in_group)
         random.shuffle(pref)
         payoff = len(pref) * payoff_multiplier
         # Generate the player prefenrece list [[space_id, term, payoff]]
         for p in pref:
             player_preference.append([int(p / 2) + 1, p % 2, payoff])
             payoff -= payoff_multiplier
-        self.player_original_preferences[player_id - 1] = player_preference
+        self.player_original_preferences[id_in_group - 1] = player_preference
 
         space_id = id_in_group
         space_preference = []
@@ -39,21 +38,20 @@ class PreferenceController:
         random.shuffle(pref)
         # Generate the space preference list [[player_id, term]]
         for p in pref:
-            if space_id <= r and int(p / 2) + 1 == space_id:
-                # if space_id <= r, we insert the contracts of the corresponding player_id into the head.
+            if id_in_group <= r and int(p / 2) == id_in_group - 1:
                 space_preference.insert(0, [int(p / 2) + 1, p % 2])
             else:
                 space_preference.append([int(p / 2) + 1, p % 2])
         self.space_original_preferences[space_id - 1] = space_preference
 
-    def get_player_original_preference(self, player_id):
-        return self.player_original_preferences[player_id - 1]
+    def get_player_original_preference(self, id_in_group):
+        return self.player_original_preferences[id_in_group - 1]
 
-    def set_player_custom_preference(self, player_id, preference):
-        self.player_custom_preferences[player_id - 1] = preference
+    def set_player_custom_preference(self, id_in_group, preference):
+        self.player_custom_preferences[id_in_group - 1] = preference
 
-    def get_player_custom_preference(self, player_id):
-        return self.player_custom_preferences[player_id - 1]
+    def get_player_custom_preference(self, id_in_group):
+        return self.player_custom_preferences[id_in_group - 1]
 
     def player_preference_to_log(self, prefs):
         res = []
@@ -63,10 +61,9 @@ class PreferenceController:
                         "payoff": p[2]})
         return res
 
-    def get_space_original_preference(self, space_id):
-        return self.space_original_preferences[space_id - 1]
+    def get_space_original_preference(self, id_in_group):
+        return self.space_original_preferences[id_in_group - 1]
 
-    # Convert space preference from numpy array to list.
     def space_preference_to_log(self, prefs):
         res = []
         for p in prefs:
@@ -76,7 +73,6 @@ class PreferenceController:
             })
         return res
 
-    # Convert player prefence from list to numpy array
     def player_pref_to_numpy_array(self, player_pref):
         res = []
         for i in range(self.n):
@@ -86,7 +82,6 @@ class PreferenceController:
             res.append(np.array(tmp))
         return res
 
-    # Convert space prefence from list to numpy array
     def space_pref_to_numpy_array(self, space_pref):
         res = []
         for i in range(self.n):

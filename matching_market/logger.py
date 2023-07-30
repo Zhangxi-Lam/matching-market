@@ -11,7 +11,7 @@ class Logger:
                           + str(id_in_subsession)
                           + ".json"
                           )
-        # Record the original data for each round for each player_id. Preference data is stored in numpy array (can not be written into log directly).
+        # Record the original data for each round for each player_id. Preference data is stored in Pandas Dataframe (can not be written into log directly).
         # self.data = [{round_num, id_in_group, player_original_preference, player_custom_preference, space_original_preference, final_allocation}]
         self.data = []
         # Record the data for each round for each player_id. Preference data is stored in Python List (can be written into log directly).
