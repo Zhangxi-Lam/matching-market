@@ -44,14 +44,14 @@ class PreferenceController:
                 space_preference.append([int(p / 2) + 1, p % 2])
         self.space_original_preferences[space_id - 1] = space_preference
 
-    def get_player_original_preference(self, id_in_group):
-        return self.player_original_preferences[id_in_group - 1]
+    def get_player_original_preference(self, player_id):
+        return self.player_original_preferences[player_id - 1]
 
-    def set_player_custom_preference(self, id_in_group, preference):
-        self.player_custom_preferences[id_in_group - 1] = preference
+    def set_player_custom_preference(self, player_id, preference):
+        self.player_custom_preferences[player_id- 1] = preference
 
-    def get_player_custom_preference(self, id_in_group):
-        return self.player_custom_preferences[id_in_group - 1]
+    def get_player_custom_preference(self, player_id):
+        return self.player_custom_preferences[player_id - 1]
 
     def player_preference_to_log(self, prefs):
         res = []
@@ -61,8 +61,8 @@ class PreferenceController:
                         "payoff": p[2]})
         return res
 
-    def get_space_original_preference(self, id_in_group):
-        return self.space_original_preferences[id_in_group - 1]
+    def get_space_original_preference(self, space_id):
+        return self.space_original_preferences[space_id - 1]
 
     def space_preference_to_log(self, prefs):
         res = []
