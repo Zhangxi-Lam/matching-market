@@ -6,23 +6,26 @@ class PreferenceController:
 
     def __init__(self, n):
         self.n = n
-        # player_original_preferences = [space_id, term, payoff]
+        # player_original_preferences = [[space_id, term, payoff]]
         self.player_original_preferences = [[] for _ in range(n)]
-        # player_custom_preferences = [space_id, term, payoff]
+        # player_custom_preferences = [[space_id, term, payoff]]
         self.player_custom_preferences = [[] for _ in range(n)]
-        # space_custom_preferences = [player_id, term]
+        # space_custom_preferences = [[player_id, term]]
         self.space_original_preferences = [[] for _ in range(n)]
 
     def get_group_size(self):
         return self.n
 
-    # Generate the preferences for the id_in_group and its corresponding space_id
+    # Generate the preferences for the player_id and its corresponding space_id
     def generate_original_preference_for_id(self, round_number, id_in_group, r, payoff_multiplier):
         player_preference = []
+        # We have 2n combinations
         pref = list(range(0, self.n * 2))
+        # Randomly shuffle the combinations
         random.seed(round_number * 1e6 + id_in_group)
         random.shuffle(pref)
         payoff = len(pref) * payoff_multiplier
+        # Generate the player prefenrece list [[space_id, term, payoff]]
         for p in pref:
             player_preference.append([int(p / 2) + 1, p % 2, payoff])
             payoff -= payoff_multiplier
@@ -33,6 +36,7 @@ class PreferenceController:
         pref = list(range(0, self.n * 2))
         random.seed(round_number * 1e6 + space_id * 1e3)
         random.shuffle(pref)
+        # Generate the space preference list [[player_id, term]]
         for p in pref:
             if id_in_group <= r and int(p / 2) == id_in_group - 1:
                 space_preference.insert(0, [int(p / 2) + 1, p % 2])
@@ -54,8 +58,7 @@ class PreferenceController:
         for p in prefs:
             res.append({"space_id": p[0],
                         "term": p[1],
-                        "payoff": p[2]
-                        })
+                        "payoff": p[2]})
         return res
 
     def get_space_original_preference(self, id_in_group):

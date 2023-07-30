@@ -39,7 +39,7 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    def compute_payoff(self, result, original_pref, has_penalty, r):
+    def compute_round_payoff(self, result, original_pref, has_penalty, r):
         space, term = None, None
         for r in result:
             if r[0] == self.id_in_group:
@@ -55,7 +55,17 @@ class Player(BasePlayer):
                     resident_space_term = r[2]
             if space != self.id_in_group and term == 0 and resident_space_term == 1:
                 payoff -= 50
+        self.payoff = payoff
         return payoff
+    
+    def compute_final_payoff(self, round_payoffs, config: ConfigParser):
+        player_id = self.id_in_group
+        final_payoff = 0
+        for round in range(config.get_num_round()):
+            if not config.get_round_config(round + 1)["practice"]:
+                final_payoff += round_payoffs[round][player_id]
+        return final_payoff
+
 
 
 class WelcomePage(Page):
@@ -150,13 +160,12 @@ class RoundResults(Page):
         controller = pref_controllers[round_num][group.id_in_subsession]
         matching_system = MatchingSystem(controller)
         result = matching_system.get_matching_result(c["matching"], c["r"])
-        payoff = player.compute_payoff(
+        payoff = player.compute_round_payoff(
             result, controller.get_player_original_preference(
                 player.id_in_group),
             c["penalty"],
             c["r"]
         )
-        print(player.id_in_group, result, payoff)
         id_in_subsession = group.id_in_subsession
         if id_in_subsession not in loggers:
             loggers[id_in_subsession] = Logger(id_in_subsession)
@@ -182,12 +191,10 @@ class FinalResults(Page):
 
     def vars_for_template(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
-        payoff, selected_round = loggers[player.group.id_in_subsession].get_player_final_payoff(
-            player.id_in_group, config)
         logger = loggers[player.group.id_in_subsession]
+        final_payoff = player.compute_final_payoff(logger.payoffs, config)
         logger.write()
-
-        return {"payoff": payoff, "selected_round": selected_round}
+        return {"payoff": final_payoff}
 
 
 page_sequence = [WelcomePage, InstructionPage,
