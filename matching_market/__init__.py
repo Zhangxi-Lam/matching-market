@@ -54,10 +54,11 @@ class Player(BasePlayer):
                 if r[1] == self.id_in_group:
                     resident_space_term = r[2]
             if space != self.id_in_group and term == 0 and resident_space_term == 1:
+                # penalty number
                 payoff -= 50
         self.payoff = payoff
         return payoff
-    
+
     # Final payoff = sum(non_pratice_round_payoff)
     def compute_final_payoff(self, round_payoffs, config: ConfigParser):
         player_id = self.id_in_group
