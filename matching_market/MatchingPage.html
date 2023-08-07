@@ -82,7 +82,7 @@ Decision
                 <th>Term</th>
                 <th>Payoff</th>
             </tr>
-            {{ for space, term, payoff in player_pref }}
+            {{ for space, term, payoff in decision_pref }}
             <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()">
                 <td>{{space}}</td>
                 {{ if term == 0}}

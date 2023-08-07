@@ -115,14 +115,19 @@ class MatchingPage(Page):
             player.id_in_group)
         return {"group_size": group_size,
                 "matching": c["matching"],
-                "player_pref": MatchingPage.shuffle(player_pref),
+                "player_pref": MatchingPage.sort(player_pref),
+                "decision_pref": MatchingPage.shuffle(player_pref),
                 "space_pref": MatchingPage.get_all_space_pref(controller, group_size, player.id_in_group)}
 
     def live_method(player: Player, data):
         controller = pref_controllers[player.group.round_number][player.group.id_in_subsession]
         controller.set_player_custom_preference(player.id_in_group, data['player_pref'])
 
-    # Shuffle the player's original preference to be displayed
+    @staticmethod
+    def sort(preference):
+        sorted_preference = sorted(preference, key=lambda pref: (pref[0], pref[1]))
+        return sorted_preference
+
     @staticmethod
     def shuffle(preference):
         shuffled_preference = preference[:]
