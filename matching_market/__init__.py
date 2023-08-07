@@ -5,7 +5,6 @@ from .config_parser import ConfigParser
 from .logger import Logger
 import numpy as np
 import random
-import time
 
 # pref_controllers[round_num][id_in_subsession] = controller
 pref_controllers = {}
@@ -172,6 +171,8 @@ class RoundResults(Page):
         if id_in_subsession not in loggers:
             loggers[id_in_subsession] = Logger(id_in_subsession)
         loggers[id_in_subsession].add_round_result(
+            group.subsession.session.code,
+            group.id_in_subsession,
             player.id_in_group,
             round_num, controller, result, payoff)
         loggers[id_in_subsession].write()

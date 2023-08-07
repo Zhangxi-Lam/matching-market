@@ -21,7 +21,7 @@ class Logger:
         # self.payoffs = {round_num: {id_in_group: payoff}}
         self.payoffs = {}
 
-    def add_round_result(self, id_in_group, round_num, controller: PreferenceController, results, payoff):
+    def add_round_result(self, session_code, id_in_subsession, id_in_group, round_num, controller: PreferenceController, results, payoff):
         # Check if we have added result for this player
         if round_num in self.payoffs and id_in_group in self.payoffs[round_num]:
             return
@@ -35,7 +35,9 @@ class Logger:
                 final_allocation = [r[0], r[1], r[2]]
         self.data.append(
             {
+                "session_code": session_code,
                 "round_num": round_num,
+                "id_in_subsession": id_in_subsession,
                 "id_in_group": id_in_group,
                 "player_original_preference": controller.get_player_original_preference(id_in_group),
                 "player_custom_preference": controller.get_player_custom_preference(id_in_group),
@@ -45,7 +47,9 @@ class Logger:
         )
         self.log_data.append(
             {
+                "session_code": session_code,
                 "round_num": round_num,
+                "id_in_subsession": id_in_subsession,
                 "id_in_group": id_in_group,
                 "player_original_preference": controller.player_preference_to_log(controller.get_player_original_preference(id_in_group)),
                 "player_custom_preference": controller.player_preference_to_log(controller.get_player_custom_preference(id_in_group)),
