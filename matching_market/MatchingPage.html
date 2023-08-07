@@ -75,6 +75,30 @@ Decision
     </div>
 
     <div class="pref-table">
+        <h5>Space Preference Sheet</h5>
+        {{ for space_pref_for_player in space_pref }}
+        <table>
+            <tr>
+                <th>Space</th>
+                <th>Term</th>
+                <th>Ranking</th>
+            </tr>
+            {{ for space, term, ranking in space_pref_for_player }}
+            <tr>
+                <td>{{space}}</td>
+                {{ if term == 0}}
+                <td>-</td>
+                {{ else }}
+                <td>+</td>
+                {{ endif }}
+                <td>{{ranking}}</td>
+            </tr>
+            {{ endfor }}
+        </table>
+        {{ endfor }}
+    </div>
+
+    <div class="pref-table">
         <h5>Your Decision Sheet</h5>
         <table id="pref-table">
             <tr>
@@ -95,28 +119,6 @@ Decision
             {{ endfor }}
         </table>
         <button id="send-pref" onclick="sendPref()">Send</button>
-    </div>
-
-    <div class="pref-table">
-        <h5>Space Preference Sheet</h5>
-        <table>
-            <tr>
-                <th>Space</th>
-                <th>Term</th>
-                <th>Ranking</th>
-            </tr>
-            {{ for space, term, ranking in space_pref }}
-            <tr>
-                <td>{{space}}</td>
-                {{ if term == 0}}
-                <td>-</td>
-                {{ else }}
-                <td>+</td>
-                {{ endif }}
-                <td>{{ranking}}</td>
-            </tr>
-            {{ endfor }}
-        </table>
     </div>
 </div>
 

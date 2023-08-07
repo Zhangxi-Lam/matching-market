@@ -139,11 +139,11 @@ class MatchingPage(Page):
         prefs = []
         for space_id in range(1, group_size + 1):
             space_pref = controller.get_space_original_preference(space_id)
-            ranking = 1
-            for p in space_pref:
+            space_pref_for_player = []
+            for ranking, p in enumerate(space_pref, 1):
                 if p[0] == player_id:
-                    prefs.append([space_id, p[1], ranking])
-                    ranking += 1
+                    space_pref_for_player.append([space_id, p[1], ranking])
+            prefs.append(space_pref_for_player)
         return prefs
 
 
