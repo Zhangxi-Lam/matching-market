@@ -9,15 +9,15 @@ The experiment will start when everyone is ready.
 </p>
 
 {{ if matching == 'DA' }}
-<embed src="{% static 'matching/instruction_matching.pdf' %}" type="application/pdf" width="95%" height="700px" />
+<embed src="{% static 'matching/instruction_matching_da.pdf' %}" type="application/pdf" width="95%" height="700px" />
 {{ elif matching == 'BE' }}
-<embed src="{% static 'matching/instruction_matching.pdf' %}" type="application/pdf" width="95%" height="700px" />
+<embed src="{% static 'matching/instruction_matching_da.pdf' %}" type="application/pdf" width="95%" height="700px" />
 {{ elif matching == 'CO' }}
-<embed src="{% static 'matching/instruction_matching.pdf' %}" type="application/pdf" width="95%" height="700px" />
+<embed src="{% static 'matching/instruction_matching_co.pdf' %}" type="application/pdf" width="95%" height="700px" />
 {{ else }}
-<embed src="{% static 'matching/instruction_matching.pdf' %}" type="application/pdf" width="95%" height="700px" />
+<embed src="{% static 'matching/instruction_matching_co.pdf' %}" type="application/pdf" width="95%" height="700px" />
 {{ endif }}
 
-{{ next_button }}
+<!-- {{ next_button }} -->
 
 {{ endblock }}

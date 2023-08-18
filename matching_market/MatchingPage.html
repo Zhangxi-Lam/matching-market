@@ -75,13 +75,13 @@ Decision
     </div>
 
     <div class="pref-table">
-        <h5>Space Preference Sheet</h5>
+        <h5>Space Priority Sheet</h5>
         {{ for space_pref_for_player in space_pref }}
         <table>
             <tr>
-                <th>Space</th>
+                <th>Space ID</th>
                 <th>Term</th>
-                <th>Ranking</th>
+                <th>Priority</th>
             </tr>
             {{ for space, term, ranking in space_pref_for_player }}
             <tr>
@@ -102,7 +102,7 @@ Decision
         <h5>Your Decision Sheet</h5>
         <table id="pref-table">
             <tr>
-                <th>Space</th>
+                <th>Space ID</th>
                 <th>Term</th>
                 <th>Payoff</th>
             </tr>
@@ -153,7 +153,7 @@ Decision
             }
         });
         liveSend({
-            'player_pref':player_pref 
+            'player_pref':player_pref
         });
     }
 

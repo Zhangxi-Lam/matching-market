@@ -13,7 +13,7 @@ loggers = {}
 
 class C(BaseConstants):
     NAME_IN_URL = 'matching_market'
-    PLAYERS_PER_GROUP = 4
+    PLAYERS_PER_GROUP = 5
     NUM_ROUNDS = 20
 
 
@@ -54,7 +54,7 @@ class Player(BasePlayer):
                     resident_space_term = r[2]
             if space != self.id_in_group and term == 0 and resident_space_term == 1:
                 # penalty number
-                payoff -= 50
+                payoff -= 2
         self.payoff = payoff
         return payoff
 
@@ -207,5 +207,6 @@ class FinalResults(Page):
 
 
 page_sequence = [WelcomePage, InstructionPage,
-                 MatchingPage, WaitResult, RoundResults, DebugPage,
+                 MatchingPage, WaitResult, RoundResults,
+                 #DebugPage,
                  FinalResults]

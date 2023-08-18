@@ -5,7 +5,7 @@ SESSION_CONFIGS = [
         name='matching_market',
         display_name="Matching Market",
         app_sequence=['matching_market'],
-        num_demo_participants=4,
+        num_demo_participants=5,
         config_file='demo.csv'
     ),
 ]
