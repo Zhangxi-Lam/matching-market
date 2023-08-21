@@ -29,3 +29,4 @@ websockets==10.1
 wrapt==1.14.1
 WTForms==2.3.3
 WTForms-SQLAlchemy==0.2
+psycopg2>=2.8.4
