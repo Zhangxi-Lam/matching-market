@@ -55,7 +55,6 @@ class Player(BasePlayer):
             if space != self.id_in_group and term == 0 and resident_space_term == 1:
                 # penalty number
                 payoff -= 2
-        self.payoff = payoff
         return payoff
 
     # Final payoff = sum(non_pratice_round_payoff)

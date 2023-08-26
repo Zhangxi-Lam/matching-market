@@ -58,7 +58,8 @@ class Logger:
                     "player_id": final_allocation[0],
                     "space_id": final_allocation[1],
                     "term": final_allocation[2],
-                }
+                },
+                "payoff": payoff
             })
 
     def debug_message(self, round_num, n):
