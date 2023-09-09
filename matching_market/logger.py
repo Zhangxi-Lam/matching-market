@@ -7,19 +7,25 @@ import random
 
 class Logger:
     def __init__(self, id_in_subsession):
-        self.file_path = ("matching_market/data/data_"
-                          + str(id_in_subsession)
-                          + ".json"
-                          )
+        self.round_data_file_path = ("matching_market/data/round_data_"
+                                     + str(id_in_subsession)
+                                     + ".json"
+                                     )
+        self.final_payoff_file_path = ("matching_market/data/final_payoff_"
+                                       + str(id_in_subsession)
+                                       + ".json"
+                                       )
         # Record the original data for each round for each player_id. Preference data is stored in numpy array (can not be written into log directly).
         # self.data = [{round_num, id_in_group, player_original_preference, player_custom_preference, space_original_preference, final_allocation}]
         self.data = []
         # Record the data for each round for each player_id. Preference data is stored in Python List (can be written into log directly).
-        # self.log_data = [{round_num, id_in_group, player_original_preference, player_custom_preference, space_original_preference, final_allocation}]
-        self.log_data = []
+        # self.round_result_log_data = [{round_num, id_in_group, player_original_preference, player_custom_preference, space_original_preference, final_allocation}]
+        self.round_result_log_data = []
         # Record the payoff of each player_id for each round.
         # self.payoffs = {round_num: {id_in_group: payoff}}
         self.payoffs = {}
+        # Record the final_payoff of each player_id in the group.
+        self.final_payoffs_log_data = []
 
     def add_round_result(self, session_code, id_in_subsession, id_in_group, round_num, controller: PreferenceController, results, payoff):
         # Check if we have added result for this player
@@ -45,7 +51,7 @@ class Logger:
                 "final_allocation": final_allocation,
             }
         )
-        self.log_data.append(
+        self.round_result_log_data.append(
             {
                 "session_code": session_code,
                 "round_num": round_num,
@@ -61,6 +67,18 @@ class Logger:
                 },
                 "payoff": payoff
             })
+
+    def add_final_payoff(self, session_code, id_in_subsession, id_in_group, final_payoff):
+        # Check if we have added the final_payoff for this player
+        for record in self.final_payoffs_log_data:
+            if record['id_in_group'] == id_in_group:
+                return
+        self.final_payoffs_log_data.append({
+            "session_code": session_code,
+            "id_in_subsession": id_in_subsession,
+            "id_in_group": id_in_group,
+            "final_payoff": final_payoff
+        })
 
     def debug_message(self, round_num, n):
         player_orig_prefs = []
@@ -91,6 +109,11 @@ class Logger:
         }
 
     def write(self):
-        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-        with open(self.file_path, "w") as outfile:
-            json.dump(self.log_data, outfile)
+        os.makedirs(os.path.dirname(self.round_data_file_path), exist_ok=True)
+        with open(self.round_data_file_path, "w") as outfile:
+            json.dump(self.round_result_log_data, outfile)
+
+        os.makedirs(os.path.dirname(
+            self.final_payoff_file_path), exist_ok=True)
+        with open(self.final_payoff_file_path, "w") as outfile:
+            json.dump(self.final_payoffs_log_data, outfile)

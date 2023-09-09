@@ -67,7 +67,6 @@ class Player(BasePlayer):
         return final_payoff
 
 
-
 class WelcomePage(Page):
     def is_displayed(player: Player):
         return player.group.round_number == 1
@@ -120,11 +119,13 @@ class MatchingPage(Page):
 
     def live_method(player: Player, data):
         controller = pref_controllers[player.group.round_number][player.group.id_in_subsession]
-        controller.set_player_custom_preference(player.id_in_group, data['player_pref'])
+        controller.set_player_custom_preference(
+            player.id_in_group, data['player_pref'])
 
     @staticmethod
     def sort(preference):
-        sorted_preference = sorted(preference, key=lambda pref: (pref[0], pref[1]))
+        sorted_preference = sorted(
+            preference, key=lambda pref: (pref[0], pref[1]))
         return sorted_preference
 
     @staticmethod
@@ -201,11 +202,15 @@ class FinalResults(Page):
         config = ConfigParser(player.group.subsession.config_file_path)
         logger = loggers[player.group.id_in_subsession]
         final_payoff = player.compute_final_payoff(logger.payoffs, config)
+        logger.add_final_payoff(player.group.subsession.session.code,
+                                player.group.id_in_subsession,
+                                player.id_in_group,
+                                final_payoff)
         logger.write()
         return {"payoff": final_payoff}
 
 
 page_sequence = [WelcomePage, InstructionPage,
                  MatchingPage, WaitResult, RoundResults,
-                 #DebugPage,
+                 # DebugPage,
                  FinalResults]
