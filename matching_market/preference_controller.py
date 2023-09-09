@@ -48,6 +48,10 @@ class PreferenceController:
         return self.player_original_preferences[player_id - 1]
 
     def set_player_custom_preference(self, player_id, preference):
+        if not preference:
+            print("Player preference is empty!")
+            return
+        print("Get player preferences")
         self.player_custom_preferences[player_id- 1] = preference
 
     def get_player_custom_preference(self, player_id):

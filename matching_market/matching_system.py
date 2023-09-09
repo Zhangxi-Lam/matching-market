@@ -164,7 +164,6 @@ class MatchingSystem:
         return space_choi
 
     def algo_co(self, pref_player, pref_space, n, r):
-        print(pref_player)
         # get the initial empty accumulate set for each space
         space_acum = pref_space.copy()
         player_acum = pref_player.copy()
