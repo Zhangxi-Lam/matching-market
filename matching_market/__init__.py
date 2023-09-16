@@ -178,9 +178,10 @@ class RoundResults(Page):
             loggers[id_in_subsession] = Logger(id_in_subsession)
         loggers[id_in_subsession].add_round_result(
             group.subsession.session.code,
+            player.participant.code,
             group.id_in_subsession,
             player.id_in_group,
-            round_num, controller, result, payoff)
+            round_num, controller, result, payoff, c)
         loggers[id_in_subsession].write()
         return {"result": result,
                 "matching": c["matching"],
@@ -203,6 +204,7 @@ class FinalResults(Page):
         logger = loggers[player.group.id_in_subsession]
         final_payoff = player.compute_final_payoff(logger.payoffs, config)
         logger.add_final_payoff(player.group.subsession.session.code,
+                                player.participant.code,
                                 player.group.id_in_subsession,
                                 player.id_in_group,
                                 final_payoff)
