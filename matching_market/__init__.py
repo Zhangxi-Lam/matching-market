@@ -8,7 +8,7 @@ import random
 
 # pref_controllers[round_num][id_in_subsession] = controller
 pref_controllers = {}
-loggers = {}
+logger = Logger()
 
 
 class C(BaseConstants):
@@ -174,15 +174,13 @@ class RoundResults(Page):
             c["r"]
         )
         id_in_subsession = group.id_in_subsession
-        if id_in_subsession not in loggers:
-            loggers[id_in_subsession] = Logger(id_in_subsession)
-        loggers[id_in_subsession].add_round_result(
+        logger.add_round_result(
             group.subsession.session.code,
             player.participant.code,
             group.id_in_subsession,
             player.id_in_group,
             round_num, controller, result, payoff, c)
-        loggers[id_in_subsession].write()
+        logger.write()
         return {"result": result,
                 "matching": c["matching"],
                 "payoff": payoff,
@@ -191,7 +189,7 @@ class RoundResults(Page):
 
 class DebugPage(Page):
     def vars_for_template(player: Player):
-        return loggers[player.group.id_in_subsession].debug_message(player.round_number, len(player.group.get_players()))
+        return logger.debug_message(player.group.id_in_subsession, player.round_number, len(player.group.get_players()))
 
 
 class FinalResults(Page):
@@ -201,8 +199,8 @@ class FinalResults(Page):
 
     def vars_for_template(player: Player):
         config = ConfigParser(player.group.subsession.config_file_path)
-        logger = loggers[player.group.id_in_subsession]
-        final_payoff = player.compute_final_payoff(logger.payoffs, config)
+        final_payoff = player.compute_final_payoff(
+            logger.payoffs[player.group.id_in_subsession], config)
         logger.add_final_payoff(player.group.subsession.session.code,
                                 player.participant.code,
                                 player.group.id_in_subsession,

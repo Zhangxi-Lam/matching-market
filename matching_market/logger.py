@@ -6,15 +6,10 @@ import random
 
 
 class Logger:
-    def __init__(self, id_in_subsession):
-        self.round_data_file_path = ("matching_market/data/round_data_"
-                                     + str(id_in_subsession)
-                                     + ".json"
-                                     )
-        self.final_payoff_file_path = ("matching_market/data/final_payoff_"
-                                       + str(id_in_subsession)
-                                       + ".json"
-                                       )
+    def __init__(self):
+        self.round_data_file_path = ("matching_market/data/round_data.json")
+        self.final_payoff_file_path = (
+            "matching_market/data/final_payoff.json")
         # Record the original data for each round for each player_id. Preference data is stored in numpy array (can not be written into log directly).
         # self.data = [{round_num, id_in_group, player_original_preference, player_custom_preference, space_original_preference, final_allocation}]
         self.data = []
@@ -22,18 +17,20 @@ class Logger:
         # self.round_result_log_data = [{round_num, id_in_group, player_original_preference, player_custom_preference, space_original_preference, final_allocation}]
         self.round_result_log_data = []
         # Record the payoff of each player_id for each round.
-        # self.payoffs = {round_num: {id_in_group: payoff}}
+        # self.payoffs = {id_in_subsession: {round_num: {id_in_group: payoff}}}
         self.payoffs = {}
         # Record the final_payoff of each player_id in the group.
         self.final_payoffs_log_data = []
 
     def add_round_result(self, session_code, participant_code, id_in_subsession, id_in_group, round_num, controller: PreferenceController, results, payoff, config):
         # Check if we have added result for this player
-        if round_num in self.payoffs and id_in_group in self.payoffs[round_num]:
+        if id_in_subsession in self.payoffs and round_num in self.payoffs[id_in_subsession] and id_in_group in self.payoffs[id_in_subsession][round_num]:
             return
-        if round_num not in self.payoffs:
-            self.payoffs[round_num] = {}
-        self.payoffs[round_num][id_in_group] = payoff
+        if id_in_subsession not in self.payoffs:
+            self.payoffs[id_in_subsession] = {}
+        if round_num not in self.payoffs[id_in_subsession]:
+            self.payoffs[id_in_subsession][round_num] = {}
+        self.payoffs[id_in_subsession][round_num][id_in_group] = payoff
         final_allocation = None
         for r in results:
             if r[0] == id_in_group:
@@ -80,7 +77,7 @@ class Logger:
     def add_final_payoff(self, session_code, participant_code, id_in_subsession, id_in_group, final_payoff):
         # Check if we have added the final_payoff for this player
         for record in self.final_payoffs_log_data:
-            if record['id_in_group'] == id_in_group:
+            if record['id_in_subsession'] == id_in_subsession and record['id_in_group'] == id_in_group:
                 return
         self.final_payoffs_log_data.append({
             "session_code": session_code,
@@ -90,14 +87,14 @@ class Logger:
             "final_payoff": final_payoff
         })
 
-    def debug_message(self, round_num, n):
+    def debug_message(self, id_in_subsession, round_num, n):
         player_orig_prefs = []
         player_cus_prefs = []
         space_orig_prefs = []
         final_allocations = []
         for d in self.data:
             for id_in_group in range(1, n + 1):
-                if d["round_num"] == round_num and d["id_in_group"] == id_in_group:
+                if d["id_in_subsession"] == id_in_subsession and d["round_num"] == round_num and d["id_in_group"] == id_in_group:
                     for pref in d["player_original_preference"]:
                         p = pref[:]
                         p.append(id_in_group)
