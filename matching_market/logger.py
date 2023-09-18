@@ -22,7 +22,7 @@ class Logger:
         # Record the final_payoff of each player_id in the group.
         self.final_payoffs_log_data = []
 
-    def add_round_result(self, session_code, participant_code, id_in_subsession, id_in_group, round_num, controller: PreferenceController, results, payoff, config):
+    def add_round_result(self, session_code, participant_label, id_in_subsession, id_in_group, round_num, controller: PreferenceController, results, payoff, config):
         # Check if we have added result for this player
         if id_in_subsession in self.payoffs and round_num in self.payoffs[id_in_subsession] and id_in_group in self.payoffs[id_in_subsession][round_num]:
             return
@@ -39,7 +39,7 @@ class Logger:
         self.data.append(
             {
                 "session_code": session_code,
-                "participant_code": participant_code,
+                "participant_label": participant_label,
                 "round_num": round_num,
                 "id_in_subsession": id_in_subsession,
                 "id_in_group": id_in_group,
@@ -52,7 +52,7 @@ class Logger:
         self.round_result_log_data.append(
             {
                 "session_code": session_code,
-                "participant_code": participant_code,
+                "participant_label": participant_label,
                 "round_num": round_num,
                 "id_in_subsession": id_in_subsession,
                 "id_in_group": id_in_group,
@@ -74,14 +74,14 @@ class Logger:
                 "payoff_multiplier": config["payoff_multiplier"],
             })
 
-    def add_final_payoff(self, session_code, participant_code, id_in_subsession, id_in_group, final_payoff):
+    def add_final_payoff(self, session_code, participant_label, id_in_subsession, id_in_group, final_payoff):
         # Check if we have added the final_payoff for this player
         for record in self.final_payoffs_log_data:
             if record['id_in_subsession'] == id_in_subsession and record['id_in_group'] == id_in_group:
                 return
         self.final_payoffs_log_data.append({
             "session_code": session_code,
-            "participant_code": participant_code,
+            "participant_label": participant_label,
             "id_in_subsession": id_in_subsession,
             "id_in_group": id_in_group,
             "final_payoff": final_payoff

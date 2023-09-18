@@ -176,7 +176,7 @@ class RoundResults(Page):
         id_in_subsession = group.id_in_subsession
         logger.add_round_result(
             group.subsession.session.code,
-            player.participant.code,
+            player.participant.label,
             group.id_in_subsession,
             player.id_in_group,
             round_num, controller, result, payoff, c)
@@ -202,7 +202,7 @@ class FinalResults(Page):
         final_payoff = player.compute_final_payoff(
             logger.payoffs[player.group.id_in_subsession], config)
         logger.add_final_payoff(player.group.subsession.session.code,
-                                player.participant.code,
+                                player.participant.label,
                                 player.group.id_in_subsession,
                                 player.id_in_group,
                                 final_payoff)
